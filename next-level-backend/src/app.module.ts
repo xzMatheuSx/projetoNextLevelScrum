@@ -17,8 +17,20 @@ import { ProdutoModule } from './produto/produto.module';
 import { MovimentoEstoqueModule } from './movimento-estoque/movimento-estoque.module';
 import { VendaModule } from './venda/venda.module';
 import { VendaProdutoModule } from './venda-produto/venda-produto.module';
-import { Usuario } from './usuario/usuario.entity';
-import { Planos } from './planos/planos.entity';
+import { Usuario } from './usuarios/entities/usuario.entity';
+import { Plano } from './plano/entities/plano.entity';
+import { Aluno } from './alunos/entities/aluno.entity';
+import { PlanoAluno } from './plano-aluno/entities/plano-aluno.entity';
+import { PagamentoAluno } from './pagamento-aluno/entities/pagamento-aluno.entity';
+import { ProdutoTipo } from './produto-tipo/entities/produto-tipo.entity';
+import { Produto } from './produto/entities/produto.entity';
+import { AlunoPresenca } from './aluno-presenca/entities/aluno-presenca.entity';
+import { EquipamentoTipo } from './equipamento-tipo/entities/equipamento-tipo.entity';
+import { Equipamento } from './equipamentos/entities/equipamento.entity';
+import { EquipamentosManutencao } from './equipamentos-manutencao/entities/equipamentos-manutencao.entity';
+import { MovimentoEstoque } from './movimento-estoque/entities/movimento-estoque.entity';
+import { Venda } from './venda/entities/venda.entity';
+import { VendaProduto } from './venda-produto/entities/venda-produto.entity';
 
 
 @Module({
@@ -32,7 +44,11 @@ import { Planos } from './planos/planos.entity';
       password: 'root',
       database: 'next-level',
       entities: [
-        Usuario, Planos
+        Usuario, Plano, Aluno, PlanoAluno,
+        PagamentoAluno, ProdutoTipo, Produto,
+        AlunoPresenca, EquipamentoTipo, Equipamento,
+        EquipamentosManutencao, MovimentoEstoque,
+        Venda, VendaProduto
       ],
       synchronize: true,
     }),
