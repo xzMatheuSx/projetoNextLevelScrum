@@ -14,6 +14,7 @@ export class AlunosController {
 
   @Get()
   findAll() {
+    console.log('')
     return this.alunosService.findAll();
   }
 
