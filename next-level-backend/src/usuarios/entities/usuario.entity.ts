@@ -1,19 +1,30 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { IsBoolean, IsNotEmpty,IsString } from 'class-validator';
 
 @Entity()
 export class Usuario {
-  @PrimaryGeneratedColumn()
-  id: number;
 
-  @Column()
-  nome: string;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column()
-  usuario: string;
+    @Column()
+    @IsString()
+    @IsNotEmpty()
+    nome: string;
 
-  @Column()
-  email: string;
+    @Column()
+    @IsString()
+    @IsNotEmpty()
+    usuario: string;
 
-  @Column()
-  senha: string;
+    @Column()
+    @IsString()
+    @IsNotEmpty()
+    email: string;
+
+    @Column()
+    @IsString()
+    @IsNotEmpty()
+    senha: string;
 }

@@ -17,9 +17,30 @@ import { ProdutoModule } from './produto/produto.module';
 import { MovimentoEstoqueModule } from './movimento-estoque/movimento-estoque.module';
 import { VendaModule } from './venda/venda.module';
 import { VendaProdutoModule } from './venda-produto/venda-produto.module';
+import { Usuario } from './usuario/usuario.entity';
+import { Planos } from './planos/planos.entity';
+
 
 @Module({
-  imports: [AlunosModule, UsuariosModule, ProdutosModule, EquipamentosModule, EquipamentoTipoModule, EquipamentosManutencaoModule, AlunoPresencaModule, PagamentoAlunoModule, PlanoAlunoModule, PlanoModule, ProdutoTipoModule, ProdutoModule, MovimentoEstoqueModule, VendaModule, VendaProdutoModule],
+  imports: 
+  [
+    TypeOrmModule.forRoot({
+      type: 'postgres', 
+      host: 'localhost',
+      port: 5432,
+      username: 'postgres',
+      password: 'root',
+      database: 'next-level',
+      entities: [
+        Usuario, Planos
+      ],
+      synchronize: true,
+    }),
+    AlunosModule, UsuariosModule, ProdutosModule, EquipamentosModule, EquipamentoTipoModule, 
+    EquipamentosManutencaoModule, AlunoPresencaModule,
+    PagamentoAlunoModule, PlanoAlunoModule, PlanoModule, 
+    ProdutoTipoModule, ProdutoModule, MovimentoEstoqueModule, 
+    VendaModule, VendaProdutoModule],
   controllers: [AppController],
   providers: [AppService],
 })
