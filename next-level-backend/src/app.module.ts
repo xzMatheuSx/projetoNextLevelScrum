@@ -4,7 +4,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AlunosModule } from './alunos/alunos.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
-import { ProdutosModule } from './produtos/produtos.module';
 import { EquipamentosModule } from './equipamentos/equipamentos.module';
 import { EquipamentoTipoModule } from './equipamento-tipo/equipamento-tipo.module';
 import { EquipamentosManutencaoModule } from './equipamentos-manutencao/equipamentos-manutencao.module';
@@ -52,7 +51,7 @@ import { VendaProduto } from './venda-produto/entities/venda-produto.entity';
       ],
       synchronize: true,
     }),
-    AlunosModule, UsuariosModule, ProdutosModule, EquipamentosModule, EquipamentoTipoModule, 
+    AlunosModule, UsuariosModule, ProdutoModule, EquipamentosModule, EquipamentoTipoModule, 
     EquipamentosManutencaoModule, AlunoPresencaModule,
     PagamentoAlunoModule, PlanoAlunoModule, PlanoModule, 
     ProdutoTipoModule, ProdutoModule, MovimentoEstoqueModule, 

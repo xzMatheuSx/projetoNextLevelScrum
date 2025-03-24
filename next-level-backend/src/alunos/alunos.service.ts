@@ -1,26 +1,31 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateAlunoDto } from './dto/create-aluno.dto';
 import { UpdateAlunoDto } from './dto/update-aluno.dto';
+import { Aluno } from './entities/aluno.entity';
 
 @Injectable()
 export class AlunosService {
-  create(createAlunoDto: CreateAlunoDto) {
-    return 'This action adds a new aluno';
+  constructor(
+    @InjectRepository(Aluno)
+    private alunosRepository: Repository<Aluno>,
+  ) {}
+
+  async create(createAlunoDto: CreateAlunoDto){
+    const aluno = this.alunosRepository.create(createAlunoDto);
+    const aux = await this.alunosRepository.save(aluno);
+    return (`aluno ${aux.nome} cadastrado com sucesso`)
   }
 
-  findAll() {
-    return `This action returns all alunos`;
+  async findAll(): Promise<Aluno[]> {
+    return await this.alunosRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} aluno`;
-  }
-
-  update(id: number, updateAlunoDto: UpdateAlunoDto) {
-    return `This action updates a #${id} aluno`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} aluno`;
-  }
-}
+  async findOne(matricula: number): Promise<Aluno> {
+    const aluno = await this.alunosRepository.findOne({ where: { matricula } });
+    if (!aluno) {
+      throw new NotFoundException(`Aluno com matrícula ${matricula} não encontrado`);
+    }
+    return aluno;
+  }}

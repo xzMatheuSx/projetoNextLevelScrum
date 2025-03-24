@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique } from 'typeorm';
 import { Usuario} from 'src/usuarios/entities/usuario.entity';
-import { isString } from 'util';
 import { IsNotEmpty, IsString } from 'class-validator';
+@Entity()
 export class Aluno {
 
     @PrimaryGeneratedColumn()
@@ -24,7 +24,7 @@ export class Aluno {
     telefone:string
 
     @Column()
-    diaVencimento: number
+    diaVencimento: string
 
     
     @ManyToOne(() => Usuario, (usuario) => usuario.id)
