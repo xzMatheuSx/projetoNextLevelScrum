@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateAlunoDto } from './dto/create-aluno.dto';
@@ -28,4 +28,23 @@ export class AlunosService {
       throw new NotFoundException(`Aluno com matrícula ${matricula} não encontrado`);
     }
     return aluno;
-  }}
+  }
+
+  async remove(matricula: number){
+    try {
+      const result = await this.alunosRepository.delete(matricula);
+      
+      if (result.affected === 0) {
+        throw new NotFoundException(`Aluno com a matricula ${matricula} não encontrado`);
+      }
+      
+      console.log(`Aluno com a matricula ${matricula} removido com sucesso`);
+      return (`Aluno com a matricula ${matricula} removido com sucesso`)
+    } catch (error) {
+      console.error(`Erro ao remover aluno ${matricula}:`, error);
+      throw new InternalServerErrorException('Falha ao remover aluno');
+    }
+  }
+
+
+}

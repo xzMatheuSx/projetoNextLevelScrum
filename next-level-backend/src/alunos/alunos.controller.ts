@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { AlunosService } from './alunos.service';
 import { Aluno } from './entities/aluno.entity';
 import { CreateAlunoDto } from './dto/create-aluno.dto';
@@ -21,5 +21,10 @@ export class AlunosController {
   @Get(':matricula')
   findOne(@Param('matricula') matricula: number){
     return this.alunosService.findOne(matricula);
+  }
+
+  @Delete(':matricula')
+  async remove(@Param('matricula', ParseIntPipe) matricula: number) {
+    return this.alunosService.remove(matricula);
   }
 }
