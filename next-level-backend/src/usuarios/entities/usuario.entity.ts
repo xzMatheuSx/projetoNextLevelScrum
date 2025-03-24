@@ -9,22 +9,14 @@ export class Usuario {
     id: number;
 
     @Column()
-    @IsString()
-    @IsNotEmpty()
     nome: string;
 
     @Column()
-    @IsString()
-    @IsNotEmpty()
     usuario: string;
 
     @Column()
-    @IsString()
-    @IsNotEmpty()
     email: string;
 
     @Column()
-    @IsString()
-    @IsNotEmpty()
     senha: string;
 }
