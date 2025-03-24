@@ -1,28 +1,4 @@
-// update-aluno.dto.ts
-import { IsNotEmpty, IsString, IsEmail, IsNumber, IsOptional } from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateAlunoDto } from './create-aluno.dto';
 
-export class UpdateAlunoDto {
-  @IsOptional()
-  @IsString()
-  nome?: string;
-
-  @IsOptional()
-  @IsString()
-  cpf?: string;
-
-  @IsOptional()
-  @IsEmail()
-  email?: string;
-
-  @IsOptional()
-  @IsString()
-  telefone?: string;
-
-  @IsOptional()
-  @IsNumber()
-  diaVencimento?: number;
-
-  @IsOptional()
-  @IsNumber()
-  usuarioAltId?: number;
-}
+export class UpdateAlunoDto extends PartialType(CreateAlunoDto) {}
