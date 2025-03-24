@@ -45,6 +45,20 @@ export class AlunosService {
       throw new InternalServerErrorException('Falha ao remover aluno');
     }
   }
-
+  async update(matricula: number, updateAlunoDto: UpdateAlunoDto){
+    try{
+      const aluno = await this.alunosRepository.findOne({ where: { matricula } });
+      if (!aluno) {
+        throw new NotFoundException(`Aluno com ID ${matricula} não encontrado`);
+      }
+      Object.assign(aluno, updateAlunoDto);
+  
+      this.alunosRepository.save(aluno);
+      return ('dados atualizados com sucesso')
+    }catch(error){
+      throw new InternalServerErrorException('Falha ao atualizar aluno')
+    }
+    
+  }
 
 }

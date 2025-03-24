@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from 
 import { AlunosService } from './alunos.service';
 import { Aluno } from './entities/aluno.entity';
 import { CreateAlunoDto } from './dto/create-aluno.dto';
+import { UpdateAlunoDto } from './dto/update-aluno.dto';
 
 @Controller('alunos')
 export class AlunosController {
@@ -26,5 +27,13 @@ export class AlunosController {
   @Delete(':matricula')
   async remove(@Param('matricula', ParseIntPipe) matricula: number) {
     return this.alunosService.remove(matricula);
+  }
+
+  @Patch(':id')
+  async update(
+    @Param('id', ParseIntPipe) matricula: number,
+    @Body() updateAlunoDto: UpdateAlunoDto, 
+  ) {
+    return this.alunosService.update(matricula, updateAlunoDto);
   }
 }
