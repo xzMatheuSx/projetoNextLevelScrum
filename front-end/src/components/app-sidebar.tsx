@@ -1,76 +1,100 @@
-import { BriefcaseBusiness, Package, Wallet, CircleDollarSign, ChartColumnBig, Home, Users } from 'lucide-react';
-import {
-	Sidebar,
-	SidebarContent,
-	SidebarGroup,
-	SidebarGroupContent,
-	SidebarGroupLabel,
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
-} from '@/components/ui/sidebar';
+import * as React from 'react';
+import { BookOpen, Bot, Settings2, SquareTerminal } from 'lucide-react';
 
-// Menu items.
-const items = [
-	{
-		title: 'Home',
-		url: '#',
-		icon: Home,
-	},
-	{
-		title: 'Alunos',
-		url: '/alunos',
-		icon: Users,
-	},
-	{
-		title: 'Funcionarios',
-		url: '/professores',
-		icon: BriefcaseBusiness,
-	},
-	{
-		title: 'Equipamentos',
-		url: '#',
-		icon: Package,
-	},
-	{
-		title: 'Relatorio',
-		url: '/professores',
-		icon: ChartColumnBig,
-	},
-	{
-		title: 'Financeiro',
-		url: '/professores',
-		icon: Wallet,
-	},
-	{
-		title: 'Mensalidade',
-		url: '/professores',
-		icon: CircleDollarSign,
-	},
-];
+import { NavMain } from '@/components/nav-main';
+import { NavUser } from '@/components/nav-user';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 
-export function AppSidebar() {
+const data = {
+	user: {
+		name: 'Emanoel Castanha',
+		email: 'Emanoel@gmail.com',
+		avatar: './images/userImage.png',
+	},
+	navMain: [
+		{
+			title: 'Vendas',
+			url: '#',
+			icon: Bot,
+			items: [
+				{
+					title: 'Vendas',
+					url: '#',
+				},
+			],
+		},
+		{
+			title: 'Financeiro',
+			url: '#',
+			icon: Settings2,
+			items: [
+				{
+					title: 'Mensalidade',
+					url: '#',
+				},
+				{
+					title: 'Financeiro',
+					url: '#',
+				},
+			],
+		},
+		{
+			title: 'Operações',
+			url: '#',
+			icon: BookOpen,
+			items: [
+				{
+					title: 'Equipamentos',
+					url: '#',
+				},
+			],
+		},
+		{
+			title: 'Recursos Humanos',
+			url: '#',
+			icon: SquareTerminal,
+			items: [
+				{
+					title: 'Alunos',
+					url: '#',
+				},
+				{
+					title: 'Funcionarios',
+					url: '#',
+				},
+			],
+		},
+	],
+};
+
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	return (
-		<Sidebar collapsible="icon" variant="sidebar" color="dark">
+		<Sidebar variant="sidebar" {...props}>
+			<SidebarHeader>
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<SidebarMenuButton size="lg" asChild>
+							<a href="#">
+								<div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+									<div>
+										<img src="../images/favicon.ico" />
+									</div>
+								</div>
+								<div className="grid flex-1 text-left text-sm leading-tight">
+									<span className="truncate font-medium">Academia</span>
+									<span className="truncate text-xs">Next Level</span>
+								</div>
+							</a>
+						</SidebarMenuButton>
+					</SidebarMenuItem>
+				</SidebarMenu>
+			</SidebarHeader>
 			<SidebarContent>
-				<SidebarGroup>
-					<SidebarGroupLabel>Menu</SidebarGroupLabel>
-					<SidebarGroupContent>
-						<SidebarMenu>
-							{items.map((item) => (
-								<SidebarMenuItem key={item.title}>
-									<SidebarMenuButton asChild>
-										<a href={item.url}>
-											<item.icon />
-											<span>{item.title}</span>
-										</a>
-									</SidebarMenuButton>
-								</SidebarMenuItem>
-							))}
-						</SidebarMenu>
-					</SidebarGroupContent>
-				</SidebarGroup>
+				<NavMain items={data.navMain} />
 			</SidebarContent>
+			<SidebarFooter>
+				<NavUser user={data.user} />
+			</SidebarFooter>
 		</Sidebar>
 	);
 }

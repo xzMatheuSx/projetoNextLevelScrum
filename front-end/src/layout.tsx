@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom';
 export default function Layout() {
 	return (
 		<SidebarProvider>
-			<AppSidebar />
+			<AppSidebar collapsible="icon" />
 			<main>
 				<SidebarTrigger />
 				<Outlet />
