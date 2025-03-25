@@ -88,7 +88,7 @@ export default function ProfileForm() {
 				<div>
 					<Button
 						variant={'default'}
-						className={`bg-[#006FEE]/25 border-1 border-[#006FEE] w-full h-14 hover:bg-[#006FEE] rounded-xl cursor-pointer ${
+						className={`bg-[#006FEE]/25 text-white border-1 border-[#006FEE] w-full h-14 hover:bg-[#006FEE] rounded-xl cursor-pointer ${
 							isLoading ? 'opacity-50 pointer-events-none' : ''
 						}`}
 						type="submit"

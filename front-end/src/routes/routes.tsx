@@ -1,9 +1,9 @@
 // routes.tsx
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import LoginPage from './pages/login';
-import Alunos from './pages/alunos';
-import Professores from './pages/professores';
-import Layout from './layout';
+import LoginPage from '../pages/login';
+import Alunos from '../pages/alunos';
+import Professores from '../pages/professores';
+import Layout from '../layout';
 
 export default function AppRoutes() {
 	return (

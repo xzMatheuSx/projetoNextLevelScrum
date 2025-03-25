@@ -1,10 +1,13 @@
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
 import { Outlet } from 'react-router-dom';
+import React from 'react';
 
 export default function Layout() {
+	const [open, setOpen] = React.useState(false);
+
 	return (
-		<SidebarProvider>
+		<SidebarProvider open={open} onOpenChange={setOpen}>
 			<AppSidebar collapsible="icon" />
 			<main>
 				<SidebarTrigger />
