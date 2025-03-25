@@ -9,6 +9,7 @@ export class PlanoController {
 
   @Post()
   create(@Body() createPlanoDto: CreatePlanoDto) {
+    console.log(createPlanoDto)
     return this.planoService.create(createPlanoDto);
   }
 
@@ -18,17 +19,17 @@ export class PlanoController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.planoService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.planoService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePlanoDto: UpdatePlanoDto) {
-    return this.planoService.update(+id, updatePlanoDto);
+  update(@Param('id') id: number, @Body() updatePlanoDto: UpdatePlanoDto) {
+    return this.planoService.update(id, updatePlanoDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.planoService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.planoService.remove(id);
   }
 }

@@ -1,26 +1,61 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Plano } from './entities/plano.entity';
 import { CreatePlanoDto } from './dto/create-plano.dto';
 import { UpdatePlanoDto } from './dto/update-plano.dto';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 
 @Injectable()
 export class PlanoService {
-  create(createPlanoDto: CreatePlanoDto) {
-    return 'This action adds a new plano';
+  constructor(
+    @InjectRepository(Plano)
+    private readonly planoRepository: Repository<Plano>,
+  ) {}
+
+  async create(createPlanoDto: CreatePlanoDto){
+    try{
+      const plano = this.planoRepository.create(createPlanoDto);
+      await this.planoRepository.save(plano);
+      return ('plano criado com sucesso')
+    }catch(error){
+      throw new Error ('Erro ao criar plano')
+    }
+    
   }
 
-  findAll() {
-    return `This action returns all plano`;
+  async findAll(): Promise<Plano[]> {
+    return await this.planoRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} plano`;
+  async findOne(id: number){
+    return await this.planoRepository.findOne({ where: { id: id } });
   }
 
-  update(id: number, updatePlanoDto: UpdatePlanoDto) {
-    return `This action updates a #${id} plano`;
+  async update(id: number, updatePlanoDto: UpdatePlanoDto){
+    try{
+      const plano = await this.planoRepository.findOne({ where: { id: id } });
+      if(!plano){
+        throw new Error('Plano não encontrado')
+      }
+      Object.assign(plano,updatePlanoDto)
+      this.planoRepository.save(plano)
+      return ('plano atualizado com sucesso')
+    }catch(error){
+      throw new Error('Erro ao atualizar plano')
+    }
+    
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} plano`;
+  async remove(id: number){
+    try{
+      const plano = await this.planoRepository.findOne({ where: { id: id } });
+      if(!plano){
+        throw new Error('Plano não encontrado')
+    }
+  }catch(error){
+    throw new Error('Erro ao remover plano')
   }
+}
+
 }

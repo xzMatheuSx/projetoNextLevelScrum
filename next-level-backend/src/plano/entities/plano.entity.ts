@@ -17,7 +17,7 @@ export class Plano {
     @Column()
     @IsNotEmpty()
     @IsNumber()
-    qtdDiasSemana: number;
+    qtdDiasSemana: string;
 
     @Column()
     @IsNotEmpty()
