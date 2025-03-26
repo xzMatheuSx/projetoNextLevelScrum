@@ -9,7 +9,7 @@ export default function Layout() {
 	return (
 		<SidebarProvider open={open} onOpenChange={setOpen}>
 			<AppSidebar collapsible="icon" />
-			<main>
+			<main className="w-full px-5">
 				<SidebarTrigger />
 				<Outlet />
 			</main>
