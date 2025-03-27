@@ -6,8 +6,8 @@ export class CreateAlunoPresencaDto {
     momento: string;
   
     @IsNotEmpty()
-    @IsString()
-    alunoMatricula: string;
+    @IsNumber()
+    alunoMatricula: number;
   
     @IsNotEmpty()
     @IsString()

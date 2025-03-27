@@ -1,25 +1,21 @@
-import { Aluno } from "src/alunos/entities/aluno.entity";
-import { Column, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { IsNotEmpty, isNumber } from "class-validator";
-import { Usuario } from "src/usuarios/entities/usuario.entity";
+import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
+import { Aluno } from 'src/alunos/entities/aluno.entity';
+import { Usuario } from 'src/usuarios/entities/usuario.entity';
 
+@Entity()
 export class PagamentoAluno {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @ManyToOne(() => Aluno, { eager: true })
-    @IsNotEmpty()
-    alunoMatricula: Aluno;
+  @ManyToOne(() => Aluno, (aluno) => aluno.matricula)
+  aluno: Aluno;
 
-    @Column()
-    @IsNotEmpty()
-    data: Date;
+  @ManyToOne(() => Usuario, (usuario) => usuario.id)
+  usuarioAlt: Usuario;
 
-    @Column()
-    @IsNotEmpty()
-    valor: number;
+  @Column()
+  data: string;
 
-    @ManyToOne(() => Usuario, { eager: true })
-    @IsNotEmpty()
-    usuarioAlt: Usuario;
+  @Column()
+  valor: number;
 }

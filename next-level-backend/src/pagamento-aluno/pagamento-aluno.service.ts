@@ -1,26 +1,74 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { PagamentoAluno } from './entities/pagamento-aluno.entity';
 import { CreatePagamentoAlunoDto } from './dto/create-pagamento-aluno.dto';
+import { Aluno } from 'src/alunos/entities/aluno.entity';  
+import { Usuario } from 'src/usuarios/entities/usuario.entity';  
 import { UpdatePagamentoAlunoDto } from './dto/update-pagamento-aluno.dto';
 
 @Injectable()
 export class PagamentoAlunoService {
-  create(createPagamentoAlunoDto: CreatePagamentoAlunoDto) {
-    return 'This action adds a new pagamentoAluno';
+  constructor(
+    @InjectRepository(PagamentoAluno)
+    private pagamentoAlunoRepository: Repository<PagamentoAluno>,
+
+    @InjectRepository(Aluno)  
+    private alunoRepository: Repository<Aluno>,
+
+    @InjectRepository(Usuario)  
+    private usuarioRepository: Repository<Usuario>,
+  ) {}
+
+  async create(createPagamentoAlunoDto: CreatePagamentoAlunoDto) {
+    // Verificar se o Aluno existe
+    const aluno = await this.alunoRepository.findOneBy({ matricula: createPagamentoAlunoDto.alunoId });
+    if (!aluno) {
+      throw new NotFoundException(`Aluno com ID ${createPagamentoAlunoDto.alunoId} não encontrado`);
+    }
+
+    // Verificar se o Usuário existe
+    const usuario = await this.usuarioRepository.findOneBy({ id: createPagamentoAlunoDto.usuarioAlt });
+    if (!usuario) {
+      throw new NotFoundException(`Usuário com ID ${createPagamentoAlunoDto.usuarioAlt} não encontrado`);
+    }
+
+    // Criar o pagamento associando o Aluno e o Usuário
+    const pagamento = this.pagamentoAlunoRepository.create({
+      ...createPagamentoAlunoDto,
+      aluno,  // Associar o aluno encontrado
+      usuarioAlt: usuario,  // Associar o usuário encontrado
+    });
+
+    return await this.pagamentoAlunoRepository.save(pagamento);
   }
 
-  findAll() {
-    return `This action returns all pagamentoAluno`;
+  async findAll(): Promise<PagamentoAluno[]> {
+    return await this.pagamentoAlunoRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} pagamentoAluno`;
+  async findOne(id: number): Promise<PagamentoAluno> {
+    const pagamento = await this.pagamentoAlunoRepository.findOneBy({ id });
+    if (!pagamento) {
+      throw new NotFoundException(`Pagamento de aluno com ID ${id} não encontrado`);
+    }
+    return pagamento;
   }
 
-  update(id: number, updatePagamentoAlunoDto: UpdatePagamentoAlunoDto) {
-    return `This action updates a #${id} pagamentoAluno`;
+  async update(id: number, updatePagamentoAlunoDto: UpdatePagamentoAlunoDto) {
+    const pagamento = await this.pagamentoAlunoRepository.findOneBy({ id });
+    if (!pagamento) {
+      throw new NotFoundException(`Pagamento de aluno com ID ${id} não encontrado`);
+    }
+    Object.assign(pagamento, updatePagamentoAlunoDto);
+    return await this.pagamentoAlunoRepository.save(pagamento);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} pagamentoAluno`;
+  async remove(id: number) {
+    const result = await this.pagamentoAlunoRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Pagamento de aluno com ID ${id} não encontrado`);
+    }
+    return `Pagamento de aluno com ID ${id} removido com sucesso`;
   }
 }

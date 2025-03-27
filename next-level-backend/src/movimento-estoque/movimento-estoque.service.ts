@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { MovimentoEstoque } from './entities/movimento-estoque.entity';
 import { CreateMovimentoEstoqueDto } from './dto/create-movimento-estoque.dto';
 import { UpdateMovimentoEstoqueDto } from './dto/update-movimento-estoque.dto';
-
 @Injectable()
 export class MovimentoEstoqueService {
   create(createMovimentoEstoqueDto: CreateMovimentoEstoqueDto) {

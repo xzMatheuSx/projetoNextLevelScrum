@@ -1,26 +1,48 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { EquipamentoTipo } from './entities/equipamento-tipo.entity';
 import { CreateEquipamentoTipoDto } from './dto/create-equipamento-tipo.dto';
 import { UpdateEquipamentoTipoDto } from './dto/update-equipamento-tipo.dto';
 
 @Injectable()
 export class EquipamentoTipoService {
-  create(createEquipamentoTipoDto: CreateEquipamentoTipoDto) {
-    return 'This action adds a new equipamentoTipo';
+  constructor(
+    @InjectRepository(EquipamentoTipo)
+    private equipamentoTipoRepository: Repository<EquipamentoTipo>,
+  ) {}
+
+  async create(createEquipamentoTipoDto: CreateEquipamentoTipoDto) {
+    const tipo = this.equipamentoTipoRepository.create(createEquipamentoTipoDto);
+    return await this.equipamentoTipoRepository.save(tipo);
   }
 
-  findAll() {
-    return `This action returns all equipamentoTipo`;
+  async findAll(): Promise<EquipamentoTipo[]> {
+    return await this.equipamentoTipoRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} equipamentoTipo`;
+  async findOne(id: number): Promise<EquipamentoTipo> {
+    const tipo = await this.equipamentoTipoRepository.findOne({ where: { id } });
+    if (!tipo) {
+      throw new NotFoundException(`Tipo de equipamento com ID ${id} não encontrado`);
+    }
+    return tipo;
   }
 
-  update(id: number, updateEquipamentoTipoDto: UpdateEquipamentoTipoDto) {
-    return `This action updates a #${id} equipamentoTipo`;
+  async update(id: number, updateEquipamentoTipoDto: UpdateEquipamentoTipoDto) {
+    const tipo = await this.equipamentoTipoRepository.findOne({ where: { id } });
+    if (!tipo) {
+      throw new NotFoundException(`Tipo de equipamento com ID ${id} não encontrado`);
+    }
+    Object.assign(tipo, updateEquipamentoTipoDto);
+    return await this.equipamentoTipoRepository.save(tipo);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} equipamentoTipo`;
+  async remove(id: number) {
+    const result = await this.equipamentoTipoRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Tipo de equipamento com ID ${id} não encontrado`);
+    }
+    return `Tipo de equipamento com ID ${id} removido com sucesso`;
   }
 }

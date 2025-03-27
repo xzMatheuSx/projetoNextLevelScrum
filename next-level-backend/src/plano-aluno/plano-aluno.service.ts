@@ -1,4 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { PlanoAluno } from './entities/plano-aluno.entity';
 import { CreatePlanoAlunoDto } from './dto/create-plano-aluno.dto';
 import { UpdatePlanoAlunoDto } from './dto/update-plano-aluno.dto';
 
