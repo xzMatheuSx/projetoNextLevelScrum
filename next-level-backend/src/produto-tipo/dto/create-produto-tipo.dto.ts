@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
+import { UnidadeMedida } from '../unidadeMedida/unidade-medida.enum';
 export class CreateProdutoTipoDto {
     @IsNotEmpty()
     @IsString()
@@ -9,5 +10,5 @@ export class CreateProdutoTipoDto {
   
     @IsNotEmpty()
     @IsString()
-    unidadeMedida: string;
+    unidadeMedida: UnidadeMedida;
   }

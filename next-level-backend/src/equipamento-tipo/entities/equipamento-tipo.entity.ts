@@ -1,12 +1,13 @@
 import { IsNotEmpty } from 'class-validator';
-import { Column, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
+@Entity()
 export class EquipamentoTipo {
     
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: "string" })
+    @Column({ type: "varchar" })
     @IsNotEmpty()
     descricao: string
 }

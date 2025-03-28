@@ -1,7 +1,8 @@
-import { Column, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { isBoolean, IsNotEmpty  } from "class-validator";
 import { UnidadeMedida } from "../unidadeMedida/unidade-medida.enum";
 
+@Entity()
 export class ProdutoTipo {
     
     @PrimaryGeneratedColumn()

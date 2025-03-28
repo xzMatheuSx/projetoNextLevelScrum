@@ -1,8 +1,9 @@
 import { Usuario } from "src/usuarios/entities/usuario.entity";
-import { Column, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { IsNotEmpty } from "class-validator";
 import { ProdutoTipo } from "src/produto-tipo/entities/produto-tipo.entity";
 
+@Entity()
 export class Produto {
     
     @PrimaryGeneratedColumn()

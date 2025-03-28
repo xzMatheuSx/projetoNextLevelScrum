@@ -2,8 +2,9 @@ import { IsNotEmpty } from "class-validator";
 import { Aluno } from "src/alunos/entities/aluno.entity";
 import { Plano } from "src/plano/entities/plano.entity";
 import { Usuario } from "src/usuarios/entities/usuario.entity";
-import { Column, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
+@Entity()
 export class PlanoAluno {
 
     @PrimaryGeneratedColumn()

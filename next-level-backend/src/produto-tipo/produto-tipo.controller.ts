@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { ProdutoTipoService } from './produto-tipo.service';
 import { CreateProdutoTipoDto } from './dto/create-produto-tipo.dto';
 import { UpdateProdutoTipoDto } from './dto/update-produto-tipo.dto';
+import { ListProdutoTipoDto } from './dto/list-produto-tipo.dto';
 
 @Controller('produto-tipo')
 export class ProdutoTipoController {
@@ -13,7 +14,7 @@ export class ProdutoTipoController {
   }
 
   @Get()
-  findAll() {
+  findAll(): Promise<ListProdutoTipoDto[]>  {
     return this.produtoTipoService.findAll();
   }
 

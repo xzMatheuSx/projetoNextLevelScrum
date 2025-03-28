@@ -1,8 +1,9 @@
 import { IsNotEmpty } from 'class-validator';
 import { EquipamentoTipo } from 'src/equipamento-tipo/entities/equipamento-tipo.entity';
 import { Usuario } from 'src/usuarios/entities/usuario.entity';
-import { Column, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
+@Entity()
 export class Equipamento {
 
     @PrimaryGeneratedColumn()

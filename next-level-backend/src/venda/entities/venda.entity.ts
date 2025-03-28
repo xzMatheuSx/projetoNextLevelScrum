@@ -1,10 +1,10 @@
 import { Aluno } from "src/alunos/entities/aluno.entity";
 import { Usuario } from "src/usuarios/entities/usuario.entity";
-import { Column, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { IsNotEmpty } from "class-validator";
 import { VendaProduto } from "src/venda-produto/entities/venda-produto.entity";
 
-
+@Entity()
 export class Venda {
 
     @PrimaryGeneratedColumn()

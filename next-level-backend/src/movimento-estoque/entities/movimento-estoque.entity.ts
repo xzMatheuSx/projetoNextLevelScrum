@@ -1,10 +1,11 @@
 import { IsNotEmpty } from 'class-validator';
-import { Column, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { MovimentoEstoqueTipo } from "../movimentoEstoqueTipo/movimento-estoque-tipo.enum";
 import { UnidadeMedida } from "src/produto-tipo/unidadeMedida/unidade-medida.enum";
 import { Usuario } from 'src/usuarios/entities/usuario.entity';
 import { Produto } from 'src/produto/entities/produto.entity';
 
+@Entity()
 export class MovimentoEstoque {
         
     @PrimaryGeneratedColumn()
