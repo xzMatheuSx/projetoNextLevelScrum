@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AlunoPresenca } from './entities/aluno-presenca.entity';
-import { Aluno } from 'src/alunos/entities/aluno.entity'; // Certifique-se de importar a entidade Aluno
+import { Aluno } from 'src/alunos/entities/aluno.entity'; 
 import { CreateAlunoPresencaDto } from './dto/create-aluno-presenca.dto';
 import { UpdateAlunoPresencaDto } from './dto/update-aluno-presenca.dto';
 
@@ -12,23 +12,22 @@ export class AlunoPresencaService {
     @InjectRepository(AlunoPresenca)
     private alunoPresencaRepository: Repository<AlunoPresenca>,
     @InjectRepository(Aluno)
-    private alunoRepository: Repository<Aluno>, // Repositório para buscar o aluno
+    private alunoRepository: Repository<Aluno>,
   ) {}
 
   async create(createAlunoPresencaDto: CreateAlunoPresencaDto) {
-    // Buscar o aluno usando a matrícula
     const aluno = await this.alunoRepository.findOne({
-      where: { matricula: createAlunoPresencaDto.alunoMatricula }, // Usar a matrícula para buscar o aluno
+      where: { matricula: createAlunoPresencaDto.alunoMatricula }, 
     });
 
     if (!aluno) {
       throw new NotFoundException(`Aluno com matrícula ${createAlunoPresencaDto.alunoMatricula} não encontrado`);
     }
 
-    // Criar a presença associando o aluno encontrado
+
     const presenca = this.alunoPresencaRepository.create({
-      ...createAlunoPresencaDto,  // Usar os dados do DTO
-      alunoMatricula: aluno,  // Associando o aluno encontrado
+      ...createAlunoPresencaDto,  
+      alunoMatricula: aluno, 
     });
 
     return await this.alunoPresencaRepository.save(presenca);

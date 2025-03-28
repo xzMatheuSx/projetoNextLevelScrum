@@ -5,8 +5,8 @@ export class CreatePlanoAlunoDto {
     planoId: number;
   
     @IsNotEmpty()
-    @IsString()
-    alunoMatricula: string;
+    @IsNumber()
+    alunoMatricula: number;
   
     @IsNotEmpty()
     @IsString()

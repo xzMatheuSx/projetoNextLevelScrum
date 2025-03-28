@@ -13,31 +13,28 @@ export class EquipamentosManutencaoService {
     @InjectRepository(EquipamentosManutencao)
     private manutencaoRepository: Repository<EquipamentosManutencao>,
     @InjectRepository(Equipamento)
-    private equipamentoRepository: Repository<Equipamento>, // Repositório para Equipamento
+    private equipamentoRepository: Repository<Equipamento>, 
     @InjectRepository(Usuario)
-    private usuarioRepository: Repository<Usuario>, // Repositório para Usuario
+    private usuarioRepository: Repository<Usuario>, 
   ) {}
 
   async create(createEquipamentosDto: CreateEquipamentosManutencaoDto) {
-    // Buscar o equipamento pelo ID e lançar exceção se não encontrado
     const equipamento = await this.equipamentoRepository.findOneOrFail({
       where: { id: createEquipamentosDto.equipamentoId },
     }).catch(() => {
       throw new NotFoundException(`Equipamento com ID ${createEquipamentosDto.equipamentoId} não encontrado`);
     });
 
-    // Buscar o usuário pelo ID e lançar exceção se não encontrado
     const usuario = await this.usuarioRepository.findOneOrFail({
       where: { id: createEquipamentosDto.usuarioAlt },
     }).catch(() => {
       throw new NotFoundException(`Usuário com ID ${createEquipamentosDto.usuarioAlt} não encontrado`);
     });
 
-    // Criar a manutenção associando o equipamento e o usuário encontrados
     const manutencao = this.manutencaoRepository.create({
-      ...createEquipamentosDto,  // Usar os dados do DTO
-      equipamento: equipamento,  // Associar o equipamento encontrado
-      usuarioAlt: usuario,  // Associar o usuário encontrado
+      ...createEquipamentosDto,
+      equipamento: equipamento,
+      usuarioAlt: usuario,  
     });
 
     return await this.manutencaoRepository.save(manutencao);

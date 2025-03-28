@@ -21,23 +21,22 @@ export class PagamentoAlunoService {
   ) {}
 
   async create(createPagamentoAlunoDto: CreatePagamentoAlunoDto) {
-    // Verificar se o Aluno existe
     const aluno = await this.alunoRepository.findOneBy({ matricula: createPagamentoAlunoDto.alunoId });
     if (!aluno) {
       throw new NotFoundException(`Aluno com ID ${createPagamentoAlunoDto.alunoId} não encontrado`);
     }
 
-    // Verificar se o Usuário existe
+
     const usuario = await this.usuarioRepository.findOneBy({ id: createPagamentoAlunoDto.usuarioAlt });
     if (!usuario) {
       throw new NotFoundException(`Usuário com ID ${createPagamentoAlunoDto.usuarioAlt} não encontrado`);
     }
 
-    // Criar o pagamento associando o Aluno e o Usuário
+
     const pagamento = this.pagamentoAlunoRepository.create({
       ...createPagamentoAlunoDto,
-      aluno,  // Associar o aluno encontrado
-      usuarioAlt: usuario,  // Associar o usuário encontrado
+      aluno,  
+      usuarioAlt: usuario,  
     });
 
     return await this.pagamentoAlunoRepository.save(pagamento);

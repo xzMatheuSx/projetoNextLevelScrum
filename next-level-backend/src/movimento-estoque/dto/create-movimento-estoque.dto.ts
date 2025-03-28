@@ -1,27 +1,27 @@
-import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsBoolean, IsString, IsNumber, IsEnum } from 'class-validator';
+import { MovimentoEstoqueTipo } from '../movimentoEstoqueTipo/movimento-estoque-tipo.enum';
 export class CreateMovimentoEstoqueDto {
-    @IsNotEmpty()
-    @IsString()
-    tipo: string;
+  @IsNotEmpty()
+  @IsEnum(MovimentoEstoqueTipo)
+  tipo: MovimentoEstoqueTipo; 
   
-    @IsNotEmpty()
-    @IsString()
-    unidadeMedidaVenda: string;
+  @IsNotEmpty()
+  @IsString()
+  unidadeMedidaVenda: string;
   
-    @IsNotEmpty()
-    @IsString()
-    data: string;
+  @IsNotEmpty()
+  @IsString()
+  data: string;
   
-    @IsNotEmpty()
-    @IsNumber()
-    produtoId: number;
+  @IsNotEmpty()
+  @IsNumber()
+  produtoId: number;
   
-    @IsNotEmpty()
-    @IsNumber()
-    quantidade: number;
+  @IsNotEmpty()
+  @IsNumber()
+  quantidade: number;
   
-    @IsNotEmpty()
-    @IsNumber()
-    usuarioAlt: number;
-  }
-  
+  @IsNotEmpty()
+  @IsNumber()
+  usuarioAlt: number;
+}
