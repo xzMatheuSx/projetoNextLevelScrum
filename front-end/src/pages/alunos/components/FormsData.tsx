@@ -1,4 +1,5 @@
 import * as React from 'react';
+import axios from 'axios';
 import {
 	ColumnDef,
 	ColumnFiltersState,
@@ -11,15 +12,14 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from '@tanstack/react-table';
-import { PencilLine } from 'lucide-react';
+import { ArrowLeft, ArrowRight, PencilLine } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
+import FormsCadastro from './FormsCadastro';
 
 export type Aluno = {
 	id: string;
@@ -29,95 +29,86 @@ export type Aluno = {
 	TrainingSchedule: string;
 };
 
-const data: Aluno[] = [
-	{
-		id: 'm5gr84i9',
-		name: 'Emanoel',
-		flat: 'Mensal',
-		monthlyFee: 'Paga',
-		TrainingSchedule: '11:30h até 12:30h',
-	},
-	{
-		id: 'm5gr84i9',
-		name: 'Pacheco',
-		flat: 'Diario',
-		monthlyFee: 'Vencida',
-		TrainingSchedule: '11:30h até 12:30h',
-	},
-	{
-		id: 'm5gr84i9',
-		name: 'Polaco',
-		flat: 'Semanal',
-		monthlyFee: 'Proxima do pagamento',
-		TrainingSchedule: '11:30h até 12:30h',
-	},
-];
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const columns: ColumnDef<Aluno>[] = [
-	{
-		id: 'select',
-		header: ({ table }) => (
-			<Checkbox
-				checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
-				onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-				aria-label="Select all"
-			/>
-		),
-		cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
-		enableSorting: false,
-		enableHiding: false,
-	},
-	{
-		accessorKey: 'name',
-		header: () => <div className="font-bold">Aluno</div>,
-		cell: ({ row }) => <div className="capitalize font-light">{row.getValue('name')}</div>,
-	},
-	{
-		accessorKey: 'flat',
-		header: () => <div className="font-bold">Plano</div>,
-		cell: ({ row }) => <div className="capitalize font-light">{row.getValue('flat')}</div>,
-	},
-	{
-		accessorKey: 'TrainingSchedule',
-		header: () => <div className="font-bold">Horario Treino</div>,
-		cell: ({ row }) => <div className="capitalize font-light">{row.getValue('TrainingSchedule')}</div>,
-	},
-	{
-		accessorKey: 'monthlyFee',
-		header: () => <div className="font-bold">Mensalidade</div>,
-		cell: ({ row }) => <div className="capitalize font-light">{row.getValue('monthlyFee')}</div>,
-	},
-
-	{
-		id: 'actions',
-		enableHiding: false,
-		cell: ({ row }) => (
-			<DropdownMenu>
-				<DropdownMenuTrigger asChild>
-					<Button variant="ghost" className="h-8 w-8 p-0">
-						<span className="sr-only">Abrir Menu</span>
-						<PencilLine />
-					</Button>
-				</DropdownMenuTrigger>
-				<DropdownMenuContent align="end">
-					<DropdownMenuItem>Editar Aluno</DropdownMenuItem>
-					<DropdownMenuSeparator />
-					<DropdownMenuItem className="bg-red-400/25 hover:bg-red-400">Excluir aluno</DropdownMenuItem>
-				</DropdownMenuContent>
-			</DropdownMenu>
-		),
-	},
-];
-
 export default function DataTableDemo() {
+	const [alunos, setAlunos] = React.useState<Aluno[]>([]);
+	const [isLoading, setIsLoading] = React.useState<boolean>(true);
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 	const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
 	const [rowSelection, setRowSelection] = React.useState({});
 
+	React.useEffect(() => {
+		async function fetchAlunos() {
+			try {
+				const response = await axios.get('/api/alunos');
+				setAlunos(response.data);
+			} catch (error) {
+				console.error('Erro ao buscar os alunos:', error);
+			} finally {
+				setIsLoading(false);
+			}
+		}
+		fetchAlunos();
+	}, []);
+
+	const columns: ColumnDef<Aluno>[] = [
+		{
+			id: 'select',
+			header: ({ table }) => (
+				<Checkbox
+					checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
+					onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+					aria-label="Select all"
+				/>
+			),
+			cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
+			enableSorting: false,
+			enableHiding: false,
+		},
+		{
+			accessorKey: 'name',
+			header: () => <div className="font-bold">Aluno</div>,
+			cell: ({ row }) => <div className="capitalize font-light">{row.getValue('name')}</div>,
+		},
+		{
+			accessorKey: 'flat',
+			header: () => <div className="font-bold">Plano</div>,
+			cell: ({ row }) => <div className="capitalize font-light">{row.getValue('flat')}</div>,
+		},
+		{
+			accessorKey: 'TrainingSchedule',
+			header: () => <div className="font-bold">Horario Treino</div>,
+			cell: ({ row }) => <div className="capitalize font-light">{row.getValue('TrainingSchedule')}</div>,
+		},
+		{
+			accessorKey: 'monthlyFee',
+			header: () => <div className="font-bold">Mensalidade</div>,
+			cell: ({ row }) => <div className="capitalize font-light">{row.getValue('monthlyFee')}</div>,
+		},
+
+		{
+			id: 'actions',
+			enableHiding: false,
+			cell: ({ row }) => (
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="ghost" className="h-8 w-8 p-0">
+							<span className="sr-only">Abrir Menu</span>
+							<PencilLine />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end">
+						<DropdownMenuItem>Editar Aluno</DropdownMenuItem>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem className="bg-red-400/25 hover:bg-red-400">Excluir aluno</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+			),
+		},
+	];
+
 	const table = useReactTable({
-		data,
+		data: alunos,
 		columns,
 		onSortingChange: setSorting,
 		onColumnFiltersChange: setColumnFilters,
@@ -132,6 +123,10 @@ export default function DataTableDemo() {
 			columnFilters,
 			columnVisibility,
 			rowSelection,
+			// pagination: {
+			// 	pageIndex: 0,
+			// 	pageSize: 14,
+			// },
 		},
 	});
 
@@ -142,36 +137,11 @@ export default function DataTableDemo() {
 					placeholder="Pesquisar alunos..."
 					value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
 					onChange={(event) => table.getColumn('name')?.setFilterValue(event.target.value)}
-					className="max-w-xl	"
+					className="max-w-xl"
 				/>
-				<Dialog>
-					<DialogTrigger asChild>
-						<Button className="bg-[#006FEE]/50 hover:bg-[#006FEE] text-white">Adicionar Aluno</Button>
-					</DialogTrigger>
-					<DialogContent className="sm:max-w-[425px]">
-						<DialogHeader>
-							<DialogTitle>Edit profile</DialogTitle>
-							<DialogDescription>Make changes to your profile here. Click save when you're done.</DialogDescription>
-						</DialogHeader>
-						<div className="grid gap-4 py-4">
-							<div className="grid grid-cols-4 items-center gap-4">
-								<Label htmlFor="name" className="text-right">
-									Name
-								</Label>
-								<Input id="name" defaultValue="Pedro Duarte" className="col-span-3" />
-							</div>
-							<div className="grid grid-cols-4 items-center gap-4">
-								<Label htmlFor="username" className="text-right">
-									Username
-								</Label>
-								<Input id="username" defaultValue="@peduarte" className="col-span-3" />
-							</div>
-						</div>
-						<DialogFooter>
-							<Button type="submit">Salvar</Button>
-						</DialogFooter>
-					</DialogContent>
-				</Dialog>
+				<div>
+					<FormsCadastro />
+				</div>
 			</div>
 			<div className="rounded-md border">
 				<Table>
@@ -194,6 +164,17 @@ export default function DataTableDemo() {
 						))}
 					</TableBody>
 				</Table>
+			</div>
+			<div className="flex items-center  py-4 justify-center gap-5 mr-5 pt-5 ">
+				<Button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+					<ArrowLeft />
+				</Button>
+				<span>
+					{table.getState().pagination.pageIndex + 1} de {table.getPageCount()}
+				</span>
+				<Button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+					<ArrowRight />
+				</Button>
 			</div>
 		</div>
 	);
