@@ -21,7 +21,7 @@ export default function FormsCadastro() {
 				Adicionar Aluno
 			</Button>
 			<Dialog open={isDialogOpen} onOpenChange={setDialogOpen} modal>
-				<DialogContent className="sm:max-w-[425px]">
+				<DialogContent className="sm:max-w-[425px] bg-[#1a1a1a] border-1 border-[#2A2A2A]">
 					<DialogHeader>
 						<DialogTitle>Adicionar Aluno</DialogTitle>
 						<DialogDescription>Preencha os detalhes do aluno e clique em Adicionar Aluno.</DialogDescription>
@@ -32,31 +32,31 @@ export default function FormsCadastro() {
 							<Label htmlFor="name" className="text-right">
 								Nome
 							</Label>
-							<Input id="name" defaultValue="" className="col-span-3" />
+							<Input id="name" defaultValue="" className="bg-[#1F1F1F] border-1 border-[#2A2A2A]  text-white" />
 						</div>
 						<div className="grid  items-center gap-4">
 							<Label htmlFor="email" className="text-right">
 								E-mail
 							</Label>
-							<Input id="email" defaultValue="" type="email" className="col-span-3" />
+							<Input id="email" defaultValue="" type="email" className="col-span-3 bg-[#1F1F1F] border-1 border-[#2A2A2A]  text-white" />
 						</div>
 						<div className="grid  items-center gap-4">
 							<Label htmlFor="documento" className="text-right">
 								CPF
 							</Label>
-							<Input id="documento" defaultValue="" className="col-span-3" />
+							<Input id="documento" defaultValue="" className="bg-[#1F1F1F] border-1 border-[#2A2A2A]  text-white" />
 						</div>
 						<div className="grid  items-center gap-4">
 							<Label htmlFor="telefone" className="text-right">
 								Telefone
 							</Label>
-							<Input id="telefone" defaultValue="" className="col-span-3" />
+							<Input id="telefone" defaultValue="" className="bg-[#1F1F1F] border-1 border-[#2A2A2A]  text-white" />
 						</div>
 						<div className="grid  items-center gap-4">
 							<Label htmlFor="horarioTreino" className="text-right">
 								Horario Treino
 							</Label>
-							<Input type="time" id="horarioTreino" defaultValue="" className="col-span-3" />
+							<Input type="time" id="horarioTreino" defaultValue="" className="bg-[#1F1F1F] border-1 border-[#2A2A2A]  text-white" />
 						</div>
 						<div className="grid  items-center gap-4">
 							<Label htmlFor="dataVencimento" className="text-right">
@@ -66,9 +66,9 @@ export default function FormsCadastro() {
 								<PopoverTrigger asChild>
 									<Button
 										variant={'outline'}
-										className={cn('w-full justify-start text-left font-normal', !date && 'text-muted-foreground')}
+										className={cn('w-full justify-start text-left font-normal ', !date && 'text-muted-foreground')}
 									>
-										<CalendarIcon className="mr-2 h-4 w-4" />
+										<CalendarIcon className="mr-2 h-4 w-4 text-white" />
 										{date ? format(date, 'PPP') : <span>Selecione a data</span>}
 									</Button>
 								</PopoverTrigger>
