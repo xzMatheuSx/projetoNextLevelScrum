@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, Timestamp } from 'typeorm';
 import { Usuario} from 'src/usuarios/entities/usuario.entity';
 import { IsNotEmpty, IsString } from 'class-validator';
 @Entity()
@@ -24,10 +24,17 @@ export class Aluno {
     telefone:string
 
     @Column()
-    diaVencimento: string
+    diaVencimento: number
 
     
     @ManyToOne(() => Usuario, (usuario) => usuario.id)
     usuarioAlt: Usuario;
+
+    
+  @Column({ default: true })
+  ativo: boolean = true
+
+  @Column({ nullable: true }) 
+  dataDesativo?: Date;
 
 }

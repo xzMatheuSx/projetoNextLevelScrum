@@ -1,4 +1,7 @@
-import { IsNotEmpty, IsString, IsEmail, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsEmail, IsNumber, IsBoolean } from 'class-validator';
+import { IsCpf } from '../validator/cpf.validator';
+import { IsTelefone } from '../validator/telefone.validator';
+import { Timestamp } from 'typeorm';
 
 export class CreateAlunoDto {
   
@@ -8,6 +11,7 @@ export class CreateAlunoDto {
 
   @IsNotEmpty()
   @IsString()
+  @IsCpf({ message: 'CPF inválido! O formato correto é 999.999.999-99' })
   cpf: string;
 
   @IsEmail({}, { message: 'E-mail inválido' })
@@ -15,13 +19,16 @@ export class CreateAlunoDto {
 
   @IsNotEmpty()
   @IsString()
+  @IsTelefone({ message: 'Número de telefone inválido! Use o formato (99) 99999-9999 ou (99) 9999-9999.' })
   telefone: string;
 
   @IsNotEmpty()
   @IsNumber()
-  diaVencimento: string;
+  diaVencimento: number;
 
   @IsNotEmpty()
   @IsNumber()
   usuarioAltId: string;
+
+
 }

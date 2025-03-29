@@ -1,5 +1,7 @@
 
-import { IsNotEmpty, IsString, IsEmail, IsNumber, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, IsEmail, IsNumber, IsOptional, IsBoolean } from 'class-validator';
+import { IsCpf } from '../validator/cpf.validator';
+import { IsTelefone } from '../validator/telefone.validator';
 export class UpdateAlunoDto {
     @IsOptional()
     @IsString()
@@ -7,6 +9,7 @@ export class UpdateAlunoDto {
   
     @IsOptional()
     @IsString()
+    @IsCpf({ message: 'CPF inválido! O formato correto é 999.999.999-99' })
     cpf?: string;
   
     @IsOptional()
@@ -15,6 +18,7 @@ export class UpdateAlunoDto {
   
     @IsOptional()
     @IsString()
+    @IsTelefone({ message: 'Número de telefone inválido! Use o formato (99) 99999-9999 ou (99) 9999-9999.' })
     telefone?: string;
   
     @IsOptional()
@@ -24,4 +28,9 @@ export class UpdateAlunoDto {
     @IsOptional()
     @IsNumber()
     usuarioAltId?: number;
+
+      @IsNotEmpty()
+      @IsBoolean()
+      ativo: boolean;
+
   }

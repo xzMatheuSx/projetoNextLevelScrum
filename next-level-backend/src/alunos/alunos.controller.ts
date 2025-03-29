@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AlunosService } from './alunos.service';
 import { Aluno } from './entities/aluno.entity';
 import { CreateAlunoDto } from './dto/create-aluno.dto';
@@ -9,13 +9,13 @@ export class AlunosController {
   constructor(private readonly alunosService: AlunosService) {}
 
   @Post()
+  @UsePipes(new ValidationPipe({ whitelist: true }))
   create(@Body() createAlunoDto: CreateAlunoDto) {
     return this.alunosService.create(createAlunoDto);
   }
 
   @Get()
   findAll() {
-    console.log('teste')
     return this.alunosService.findAll();
   }
 
