@@ -19,4 +19,7 @@ export class Usuario {
 
     @Column()
     senha: string;
+
+    @Column({ default: true })
+    ativo: boolean;
 }
