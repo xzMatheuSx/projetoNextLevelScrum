@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Usuario } from './entities/usuario.entity';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
@@ -67,12 +67,26 @@ export class UsuariosService {
       if (!Usuario) {
         throw new NotFoundException(`Usuario com ID ${id} não encontrado`);
       }
+
+      if (updateUsuarioDto?.usuario){
+        if ((await this.UsuariosRepository.find({ where: { usuario : updateUsuarioDto.usuario, id: Not(id) }})).length > 0) {
+            throw new BadRequestException("Atenção! Esse nome de usuário já está sendo utilizado, será preciso informar outro!")
+        }
+      }
+
+        if (updateUsuarioDto?.senha){
+            if (updateUsuarioDto?.senha?.length < 10){
+                throw new BadRequestException("Atenção! É preciso que o campo de senha tenha pelo menos 10 caracteres!")
+            }
+        }       
+
       Object.assign(Usuario, updateUsuarioDto);
   
       this.UsuariosRepository.save(Usuario);
       return ('dados atualizados com sucesso')
     }catch(error){
-      throw new InternalServerErrorException('Falha ao atualizar Usuario')
+        throw error
+      //throw new InternalServerErrorException('Falha ao atualizar Usuario')
     }
     
   }
