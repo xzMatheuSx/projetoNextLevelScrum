@@ -7,6 +7,8 @@ import { UpdateProdutoTipoDto } from './dto/update-produto-tipo.dto';
 import { ListProdutoTipoDto } from './dto/list-produto-tipo.dto';
 import { unidadeMedidaDesc } from './unidadeMedida/unidade-medida';
 import { Produto } from 'src/produto/entities/produto.entity';
+import { UnidadeMedida } from './unidadeMedida/unidade-medida.enum';
+import { RetornaUnidadeMedida } from './unidadeMedida/retorna-unidade-medida.dto';
 @Injectable()
 export class ProdutoTipoService {
 
@@ -81,5 +83,32 @@ export class ProdutoTipoService {
       } catch (error) {
         throw new InternalServerErrorException('Ocorreu um erro ao excluir o tipo de produto!');
       }
+    }
+
+
+    retornaUnidadeMedidas() {
+        let unidades: RetornaUnidadeMedida[] = [] 
+
+        unidades.push(
+            new RetornaUnidadeMedida(UnidadeMedida.GR, "GR")
+        )
+
+        unidades.push(
+            new RetornaUnidadeMedida(UnidadeMedida.KG, "KG")
+        )
+
+        unidades.push(
+            new RetornaUnidadeMedida(UnidadeMedida.LT, "LT")
+        )
+
+        unidades.push(
+            new RetornaUnidadeMedida(UnidadeMedida.ML, "ML")
+        )
+
+        unidades.push(
+            new RetornaUnidadeMedida(UnidadeMedida.UN, "UN")
+        )
+
+        return unidades
     }
 }

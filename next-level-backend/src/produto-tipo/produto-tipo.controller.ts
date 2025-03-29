@@ -18,7 +18,7 @@ export class ProdutoTipoController {
     return this.produtoTipoService.findAll();
   }
 
-  @Get(':id')
+  @Get('/retorna/:id')
   findOne(@Param('id') id: string) {
     return this.produtoTipoService.findOne(+id);
   }
@@ -31,5 +31,10 @@ export class ProdutoTipoController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.produtoTipoService.remove(+id);
+  }
+
+  @Get('/unidade-medida')
+  retornaUnidadeMedidas() {
+    return this.produtoTipoService.retornaUnidadeMedidas();
   }
 }

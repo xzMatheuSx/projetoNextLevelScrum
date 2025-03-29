@@ -3,5 +3,4 @@ export enum UnidadeMedida {
     GR = 'Gramas',
     KG = 'Kilogramas',
     LT = 'Litros',
-    ML = 'Mililitros',
-}
+    ML = 'Mililitros',}
