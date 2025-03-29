@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Usuario } from './entities/usuario.entity';
@@ -15,6 +15,15 @@ export class UsuariosService {
 
   async create(createUsuarioDto: CreateUsuarioDto){
     const Usuario = this.UsuariosRepository.create(createUsuarioDto);
+
+    if ((await this.UsuariosRepository.find({ where: { usuario : createUsuarioDto.usuario}})).length > 0) {
+        throw new BadRequestException("Atenção! Esse nome de usuário já está sendo utilizado, será preciso informar outro!")
+    }
+
+    if (createUsuarioDto.senha.length < 10){
+        throw new BadRequestException("Atenção! É preciso que o campo de senha tenha pelo menos 10 caracteres!")
+    }
+
     const aux = await this.UsuariosRepository.save(Usuario);
     return (`Usuario ${aux.nome} cadastrado com sucesso`)
   }
