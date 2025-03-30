@@ -12,4 +12,7 @@ export class CreateAlunoPresencaDto {
     @IsNotEmpty()
     @IsString()
     tipo: string;
+
+    @IsString()
+    usuarioAltId: string;
   }

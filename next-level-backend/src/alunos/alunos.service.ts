@@ -9,6 +9,8 @@ import { Not, Repository, Timestamp } from 'typeorm';
 import { CreateAlunoDto } from './dto/create-aluno.dto';
 import { UpdateAlunoDto } from './dto/update-aluno.dto';
 import { Aluno } from './entities/aluno.entity';
+import { ListaAlunoDTO } from './dto/lista-aluno.dto';
+import { RetornaAlunoDTO } from './dto/retorna-aluno.dto';
 
 @Injectable()
 export class AlunosService {
@@ -45,11 +47,17 @@ export class AlunosService {
         return 'O aluno foi cadastrado com sucesso!';
     }
 
-    async findAll(): Promise<Aluno[]> {
-        return await this.alunosRepository.find();
+    async findAll(): Promise<ListaAlunoDTO[]> {
+        let alunos = await this.alunosRepository.find();
+
+        return alunos.map((a: Aluno) => 
+            new ListaAlunoDTO(
+                a.matricula, a.nome, a.diaVencimento, a.ativo
+            )
+        )
     }
 
-    async findOne(matricula: number): Promise<Aluno> {
+    async findOne(matricula: number): Promise<RetornaAlunoDTO> {
         const aluno = await this.alunosRepository.findOne({
             where: { matricula },
         });
@@ -58,7 +66,11 @@ export class AlunosService {
                 `Aluno com matrícula ${matricula} não encontrado`,
             );
         }
-        return aluno;
+        return new RetornaAlunoDTO(
+            aluno.matricula, aluno.nome,
+            aluno.cpf, aluno.email, aluno.telefone, 
+            aluno.diaVencimento, aluno.ativo
+        );
     }
 
     async remove(matricula: number) {

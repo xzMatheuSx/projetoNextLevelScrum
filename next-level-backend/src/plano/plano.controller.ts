@@ -9,7 +9,6 @@ export class PlanoController {
 
   @Post()
   create(@Body() createPlanoDto: CreatePlanoDto) {
-    console.log(createPlanoDto)
     return this.planoService.create(createPlanoDto);
   }
 
@@ -28,8 +27,4 @@ export class PlanoController {
     return this.planoService.update(id, updatePlanoDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.planoService.remove(id);
-  }
 }

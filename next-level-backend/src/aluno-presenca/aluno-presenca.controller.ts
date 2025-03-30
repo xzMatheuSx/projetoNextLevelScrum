@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { AlunoPresencaService } from './aluno-presenca.service';
 import { CreateAlunoPresencaDto } from './dto/create-aluno-presenca.dto';
 import { UpdateAlunoPresencaDto } from './dto/update-aluno-presenca.dto';
@@ -12,12 +12,24 @@ export class AlunoPresencaController {
     return this.alunoPresencaService.create(createAlunoPresencaDto);
   }
 
+
   @Get()
   findAll() {
     return this.alunoPresencaService.findAll();
   }
 
-  @Get(':id')
+  @Get('/pesquisar')
+  pesquisarPresencaAluno(
+    @Query('dataIni') dataIni: Date,
+    @Query("dataFim") dataFim: Date,
+    @Query("aluno") aluno: string
+    ) {
+    return this.alunoPresencaService.pesquisarPresencaAluno(
+        dataIni, dataFim, aluno
+    );
+  }
+
+  @Get('/retornar/:id')
   findOne(@Param('id') id: string) {
     return this.alunoPresencaService.findOne(+id);
   }

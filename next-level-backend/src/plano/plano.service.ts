@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Plano } from './entities/plano.entity';
 import { CreatePlanoDto } from './dto/create-plano.dto';
 import { UpdatePlanoDto } from './dto/update-plano.dto';
 import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import { ListaPlanoDTO } from './dto/lista-plano.dto';
+import { RetornaPlanoDTO } from './dto/retorna-plano.dto';
 
 @Injectable()
 export class PlanoService {
@@ -17,19 +19,30 @@ export class PlanoService {
     try{
       const plano = this.planoRepository.create(createPlanoDto);
       await this.planoRepository.save(plano);
-      return ('plano criado com sucesso')
+      return ('Plano criado com sucesso')
     }catch(error){
       throw new Error ('Erro ao criar plano')
     }
     
   }
 
-  async findAll(): Promise<Plano[]> {
-    return await this.planoRepository.find();
+  async findAll(): Promise<ListaPlanoDTO[]> {
+    let planos = await this.planoRepository.find();
+
+    return planos.map((p: Plano) => new ListaPlanoDTO(
+        p.id, p.descricao, p.qtdDiasSemana, 
+        p.valor, p?.usuarioAlt?.usuario || ""
+    ))
   }
 
   async findOne(id: number){
-    return await this.planoRepository.findOne({ where: { id: id } });
+    let plano =  await this.planoRepository.findOne({ where: { id: id } });
+
+    if (!plano) {
+        throw new BadRequestException("Ocorreu um erro ao retornar o plano por id!")
+    }
+
+    return new RetornaPlanoDTO(plano?.id, plano?.descricao, plano?.qtdDiasSemana, plano?.valor)
   }
 
   async update(id: number, updatePlanoDto: UpdatePlanoDto){
@@ -40,22 +53,11 @@ export class PlanoService {
       }
       Object.assign(plano,updatePlanoDto)
       this.planoRepository.save(plano)
-      return ('plano atualizado com sucesso')
+      return ('Plano atualizado com sucesso')
     }catch(error){
       throw new Error('Erro ao atualizar plano')
     }
     
   }
-
-  async remove(id: number){
-    try{
-      const plano = await this.planoRepository.findOne({ where: { id: id } });
-      if(!plano){
-        throw new Error('Plano não encontrado')
-    }
-  }catch(error){
-    throw new Error('Erro ao remover plano')
-  }
-}
 
 }
