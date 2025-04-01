@@ -9,6 +9,7 @@ export class PlanoAlunoController {
 
   @Post()
   create(@Body() createPlanoAlunoDto: CreatePlanoAlunoDto) {
+    console.log("dto> " + JSON.stringify(createPlanoAlunoDto, null, 2));
     return this.planoAlunoService.create(createPlanoAlunoDto);
   }
 
