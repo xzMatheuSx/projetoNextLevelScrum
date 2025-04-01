@@ -3,23 +3,23 @@ import { IsBoolean, IsNotEmpty, IsString, IsEmail } from 'class-validator';
 
 export class CreateUsuarioDto {
   
-  @ApiProperty({ description: 'Nome do aluno' })
+  @ApiProperty({ description: 'Nome' })
   @IsString()
   @IsNotEmpty()
   nome: string;
 
-  @ApiProperty({ description: 'Usuario do aluno' })
+  @ApiProperty({ description: 'Usuario' })
 
   @IsString()
   @IsNotEmpty()
   usuario: string;
 
-  @ApiProperty({ description: 'Email do aluno' })
+  @ApiProperty({ description: 'Email' })
   @IsEmail()
   @IsNotEmpty()
   email: string;
 
-  @ApiProperty({ description: 'Senha do aluno' })
+  @ApiProperty({ description: 'Senha' })
   @IsString()
   @IsNotEmpty()
   senha: string;

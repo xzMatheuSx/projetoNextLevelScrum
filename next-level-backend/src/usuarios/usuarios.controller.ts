@@ -10,27 +10,33 @@ export class UsuariosController {
   constructor(private readonly usuariosService: UsuariosService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Retorna uma mensagem de exemplo' })
+  @ApiOperation({ summary: 'Cadastro de usuario' })
   create(@Body() createUsuarioDto: CreateUsuarioDto) {
     return this.usuariosService.create(createUsuarioDto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Retorna todos os usuarios' })
   findAll() {
     return this.usuariosService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Retorna usuario por id' })
   findOne(@Param('id') id: number) {
     return this.usuariosService.findOne(id);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Edição de usuário' })
+
   update(@Param('id') id: number, @Body() updateUsuarioDto: UpdateUsuarioDto) {
     return this.usuariosService.update(id, updateUsuarioDto);
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Exclusão de usuario' })
+
   remove(@Param('id') id: string) {
     return this.usuariosService.remove(+id);
   }
