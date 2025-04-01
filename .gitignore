@@ -34,3 +34,6 @@ build/
 
 /next-level-backend/node_modules
 /next-level-backend/dist
+/node_modules/yargs
+/node_modules
+/node_modules/*
