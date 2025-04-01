@@ -1,5 +1,11 @@
-function Alunos() {
-	return <h1>Alunos page teste</h1>;
-}
+import FormsData from './components/FormsData';
 
-export default Alunos;
+export default function AlunosPage() {
+	return (
+		<div className=" w-full">
+			<div className="w-full">
+				<FormsData />
+			</div>
+		</div>
+	);
+}
