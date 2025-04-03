@@ -48,4 +48,14 @@ export class UpdateAlunoDto {
 
       ativo: boolean;
 
+      
+  @ApiProperty({ description: 'Data nascimento' })
+  @IsNotEmpty()
+  dataNascimento: Date;
+
+  @ApiProperty({ description: 'Horário estimado treino' })
+  horarioEstimadoTreino: string;
+
+  @ApiProperty({ description: 'Responsavel' })
+  responsavel: string;
   }

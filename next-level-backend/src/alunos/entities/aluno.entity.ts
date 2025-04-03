@@ -38,4 +38,13 @@ usuarioAlt: Usuario;
   @Column({ nullable: true }) 
   dataDesativo?: Date;
 
+
+  @Column({ nullable: true })
+  dataNascimento: Date
+
+  @Column({ nullable: true }) 
+  horarioEstimadoTreino: String
+
+  @Column({ nullable: true }) 
+  responsavel: String
 }
