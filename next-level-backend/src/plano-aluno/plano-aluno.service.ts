@@ -12,103 +12,104 @@ import { Usuario } from 'src/usuarios/entities/usuario.entity';
 export class PlanoAlunoService {
   constructor(
     @InjectRepository(PlanoAluno)
-    private planoAlunoRepository: Repository<PlanoAluno>,
-
-    @InjectRepository(Plano)
-    private planoRepository: Repository<Plano>,
-
-    @InjectRepository(Aluno)
-    private alunoRepository: Repository<Aluno>,
-
-    @InjectRepository(Usuario)
-    private usuarioRepository: Repository<Usuario>,
+    private readonly planoAlunoRepository: Repository<PlanoAluno>,
+    @InjectRepository(Plano) // Repositório correto para Plano
+    private readonly planoRepository: Repository<Plano>
   ) {}
 
   async create(createPlanoAlunoDto: CreatePlanoAlunoDto) {
-    const plano = await this.planoRepository.findOne({ where: { id: createPlanoAlunoDto.planoId } });
-    if (!plano) {
-      throw new NotFoundException(`Plano com ID ${createPlanoAlunoDto.planoId} não encontrado`);
-    }
+    const novoPlanoAluno = this.planoAlunoRepository.create({
+      plano: { id: createPlanoAlunoDto.plano } as Plano,
+      aluno: { matricula: createPlanoAlunoDto.aluno } as Aluno,
+      dataInicio: createPlanoAlunoDto.dataInicio,
+      dataFinal: createPlanoAlunoDto.dataFinal,
+      usuarioAlt: { id: createPlanoAlunoDto.usuarioAlt } as Usuario,
+    });
+  
+    return await this.planoAlunoRepository.save(novoPlanoAluno);
+  }
 
-    const aluno = await this.alunoRepository.findOne({ where: { matricula: createPlanoAlunoDto.alunoMatricula } });
-    if (!aluno) {
-      throw new NotFoundException(`Aluno com matrícula ${createPlanoAlunoDto.alunoMatricula} não encontrado`);
-    }
+  async findAll(): Promise<any[]> {
+    const results = await this.planoAlunoRepository.find({
+      relations: ['plano', 'aluno', 'usuarioAlt'],
+    });
+  
+    return results.map(pa => ({
+      nomeAluno: pa.aluno.nome,
+      dataCriacao: pa.dataInicio, 
+      usuarioCadastro: pa.usuarioAlt ? pa.usuarioAlt.nome : null,
+    }));
+  }
 
-    const usuario = await this.usuarioRepository.findOne({ where: { id: createPlanoAlunoDto.usuarioAlt } });
-    if (!usuario) {
-      throw new NotFoundException(`Usuário com ID ${createPlanoAlunoDto.usuarioAlt} não encontrado`);
+  async findOne(alunoId: number): Promise<any> {
+    const planoAluno = await this.planoAlunoRepository.findOne({ 
+      where: { aluno: { matricula: alunoId } }, 
+      relations: ['plano', 'aluno', 'usuarioAlt'] 
+    });
+  
+    if (!planoAluno) {
+      throw new NotFoundException(`Plano do aluno com ID ${alunoId} não encontrado`);
     }
+  
+    return {
+      nomeAluno: planoAluno.aluno.nome, 
+      plano: planoAluno.plano.descricao, 
+      dataCriacao: planoAluno.dataInicio, 
+      usuarioCadastro: planoAluno.usuarioAlt ? planoAluno.usuarioAlt.nome : null, 
+    };
+  }
+  async update(id: number, updatePlanoAlunoDto: UpdatePlanoAlunoDto): Promise<PlanoAluno> {
 
-    const planoAluno = this.planoAlunoRepository.create({
-      ...createPlanoAlunoDto,
-      plano,
-      aluno,
-      usuarioAlt: usuario,
+    const planoAluno = await this.planoAlunoRepository.findOne({ 
+        where: { id },
+        relations: ['plano', 'aluno'] 
     });
 
-    const savedPlanoAluno = await this.planoAlunoRepository.save(planoAluno);
-    return `Plano do aluno com ID ${savedPlanoAluno.id} cadastrado com sucesso`;
-  }
+    if (!planoAluno) {
+        throw new NotFoundException(`PlanoAluno com ID ${id} não encontrado`);
+    }
 
-  async findAll(): Promise<PlanoAluno[]> {
-    return await this.planoAlunoRepository.find();
-  }
+   
+    if (updatePlanoAlunoDto.plano) {
+      
+        const plano = await this.planoRepository.findOne({ 
+            where: { id: updatePlanoAlunoDto.plano }
+        });
+        
+        if (!plano) {
+            throw new NotFoundException(`Plano com ID ${updatePlanoAlunoDto.plano} não encontrado`);
+        }
 
-  async findOne(id: number): Promise<PlanoAluno> {
+        planoAluno.plano = plano;
+    }
+
+    
+    if (updatePlanoAlunoDto.dataInicio) {
+        planoAluno.dataInicio = updatePlanoAlunoDto.dataInicio;
+    }
+
+    if (updatePlanoAlunoDto.dataFinal) {
+        planoAluno.dataFinal = updatePlanoAlunoDto.dataFinal;
+    }
+
+  
+    try {
+        return await this.planoAlunoRepository.save(planoAluno);
+    } catch (error) {
+        throw new InternalServerErrorException('Erro ao atualizar o PlanoAluno');
+    }
+}
+  
+  async remove(id: number): Promise<any> {
     const planoAluno = await this.planoAlunoRepository.findOne({ where: { id } });
+  
     if (!planoAluno) {
       throw new NotFoundException(`PlanoAluno com ID ${id} não encontrado`);
     }
-    return planoAluno;
+  
+    await this.planoAlunoRepository.delete(id);
+    return { message: `PlanoAluno com ID ${id} removido com sucesso!` };
   }
 
-  async remove(id: number) {
-    try {
-      const result = await this.planoAlunoRepository.delete(id);
-      if (result.affected === 0) {
-        throw new NotFoundException(`PlanoAluno com ID ${id} não encontrado`);
-      }
-      return `PlanoAluno com ID ${id} removido com sucesso`;
-    } catch (error) {
-      console.error(`Erro ao remover PlanoAluno ${id}:`, error);
-      throw new InternalServerErrorException('Falha ao remover PlanoAluno');
-    }
-  }
 
-  async update(id: number, updatePlanoAlunoDto: UpdatePlanoAlunoDto) {
-    try {
-      const planoAluno = await this.planoAlunoRepository.findOne({ where: { id } });
-      if (!planoAluno) {
-        throw new NotFoundException(`PlanoAluno com ID ${id} não encontrado`);
-      }
-
-      const plano = await this.planoRepository.findOne({ where: { id: updatePlanoAlunoDto.planoId } });
-      if (!plano) {
-        throw new NotFoundException(`Plano com ID ${updatePlanoAlunoDto.planoId} não encontrado`);
-      }
-
-      const aluno = await this.alunoRepository.findOne({ where: { matricula: updatePlanoAlunoDto.alunoMatricula } });
-      if (!aluno) {
-        throw new NotFoundException(`Aluno com matrícula ${updatePlanoAlunoDto.alunoMatricula} não encontrado`);
-      }
-
-      const usuario = await this.usuarioRepository.findOne({ where: { id: updatePlanoAlunoDto.usuarioAlt } });
-      if (!usuario) {
-        throw new NotFoundException(`Usuário com ID ${updatePlanoAlunoDto.usuarioAlt} não encontrado`);
-      }
-
-      Object.assign(planoAluno, {
-        ...updatePlanoAlunoDto,
-        plano,
-        aluno,
-        usuarioAlt: usuario,
-      });
-
-      await this.planoAlunoRepository.save(planoAluno);
-      return 'Dados de PlanoAluno atualizados com sucesso';
-    } catch (error) {
-      throw new InternalServerErrorException('Falha ao atualizar PlanoAluno');
-    }
-  }
 }
