@@ -20,6 +20,7 @@ export class AlunosService {
     ) {}
 
     async create(createAlunoDto: CreateAlunoDto) {
+        console.log(createAlunoDto)
         if (
             (
                 await this.alunosRepository.find({
@@ -38,6 +39,25 @@ export class AlunosService {
             );
         }
 
+        if (createAlunoDto.dataNascimento == null) {
+            throw new BadRequestException(
+                'Atenção! É necessário informar a data de nascimento!',
+            );
+        }
+
+        if (createAlunoDto.dataNascimento){
+            if (this.calcularIdade(createAlunoDto.dataNascimento) < 12){
+                throw new BadRequestException(
+                    'Atenção! Crianças com menos de 12 anos não podem ser matriculadas!'
+                )
+            }
+            if (this.calcularIdade(createAlunoDto.dataNascimento) < 18 
+            && (createAlunoDto.responsavel == null || createAlunoDto.responsavel == "")){
+                throw new BadRequestException(
+                    'Atenção! Para menores de idade é obrigatorio informações do responsável!'
+                )
+            }
+        }
         const aluno = this.alunosRepository.create(createAlunoDto);
 
         aluno.ativo = true 
@@ -125,6 +145,20 @@ export class AlunosService {
                     );
                 }
             }
+
+            if (updateAlunoDto.dataNascimento){
+                if (this.calcularIdade(updateAlunoDto.dataNascimento) < 12){
+                    throw new BadRequestException(
+                        'Atenção! Crianças com menos de 12 anos não podem ser matriculadas!'
+                    )
+                }
+                if (this.calcularIdade(updateAlunoDto.dataNascimento) < 18 && (updateAlunoDto.responsavel == null || updateAlunoDto.responsavel == "")){
+                    throw new BadRequestException(
+                        'Atenção! Para menores de idade é obrigatorio informações do responsável!'
+                    )
+                }
+            }
+        
         
             Object.assign(aluno, updateAlunoDto);
 
@@ -134,5 +168,23 @@ export class AlunosService {
         } catch (error) {
             throw error
         }
+    }
+
+    calcularIdade(dataNascimento: Date, dataAtual = new Date()) {
+        const nascimento = new Date(dataNascimento);
+        const atual = new Date(dataAtual);
+    
+        let idade = atual.getFullYear() - nascimento.getFullYear();
+        const mesAtual = atual.getMonth();
+        const diaAtual = atual.getDate();
+        const mesNascimento = nascimento.getMonth();
+        const diaNascimento = nascimento.getDate();
+    
+        // Verifica se a pessoa já fez aniversário no ano atual
+        if (mesAtual < mesNascimento || (mesAtual === mesNascimento && diaAtual < diaNascimento)) {
+            idade--;
+        }
+    
+        return idade;
     }
 }

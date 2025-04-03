@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, Timestamp } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, JoinColumn } from 'typeorm';
 import { Usuario} from 'src/usuarios/entities/usuario.entity';
 import { IsNotEmpty, IsString } from 'class-validator';
 @Entity()
@@ -27,8 +27,9 @@ export class Aluno {
     diaVencimento: number
 
     
-    @ManyToOne(() => Usuario, (usuario) => usuario.id)
-    usuarioAlt: Usuario;
+    @ManyToOne(() => Usuario, { eager: true }) 
+@JoinColumn({ name: "usuarioAlt" }) 
+usuarioAlt: Usuario;
 
     
   @Column({ default: true })
@@ -37,4 +38,13 @@ export class Aluno {
   @Column({ nullable: true }) 
   dataDesativo?: Date;
 
+
+  @Column({ nullable: true })
+  dataNascimento: Date
+
+  @Column({ nullable: true }) 
+  horarioEstimadoTreino: String
+
+  @Column({ nullable: true }) 
+  responsavel: String
 }

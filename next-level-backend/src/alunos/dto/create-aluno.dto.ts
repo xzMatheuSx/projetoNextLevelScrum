@@ -43,5 +43,15 @@ export class CreateAlunoDto {
 
   usuarioAltId: string;
 
+  @ApiProperty({ description: 'Data nascimento' })
+  @IsNotEmpty()
+  dataNascimento: Date;
 
+  @ApiProperty({ description: 'Horario estimado treino' })
+
+  horarioEstimadoTreino: string;
+
+  @ApiProperty({ description: 'Responsavel' })
+  @IsString()
+  responsavel: string;
 }

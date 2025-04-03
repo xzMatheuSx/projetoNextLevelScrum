@@ -2,7 +2,7 @@ import { IsNotEmpty } from "class-validator";
 import { Aluno } from "src/alunos/entities/aluno.entity";
 import { Plano } from "src/plano/entities/plano.entity";
 import { Usuario } from "src/usuarios/entities/usuario.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class PlanoAluno {
@@ -10,13 +10,13 @@ export class PlanoAluno {
     @PrimaryGeneratedColumn()
     id: number;
     
-    @ManyToOne(() => Plano, { eager: true })
-    @IsNotEmpty()
-    plano: Plano;
+    @ManyToOne(() => Plano, (plano) => plano.id)
+  @JoinColumn({ name: "planoId" })  
+  plano: Plano;
 
-    @ManyToOne(() => Aluno, { eager: true })
-    @IsNotEmpty()
-    aluno: Aluno;
+  @ManyToOne(() => Aluno, (aluno) => aluno.matricula)
+  @JoinColumn({ name: "alunoMatricula" })  
+  aluno: Aluno;
 
     @Column()
     dataInicio: Date;
@@ -24,7 +24,7 @@ export class PlanoAluno {
     @Column()
     dataFinal: Date;
 
-    @ManyToOne(() => Usuario, { eager: true })
-    @IsNotEmpty()
+    @ManyToOne(() => Usuario, (usuario) => usuario.id)
+    @JoinColumn({ name: "usuarioAltId" }) 
     usuarioAlt: Usuario;
 }
