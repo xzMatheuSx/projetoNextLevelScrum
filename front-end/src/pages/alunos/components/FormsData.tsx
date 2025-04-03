@@ -22,11 +22,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import FormsCadastro from './FormsCadastro';
 
 export type Aluno = {
-	id: string;
-	name: string;
-	flat: 'Mensal' | 'Diario' | 'Semanal';
-	monthlyFee: 'Paga' | 'Proxima do pagamento' | 'Vencida';
-	TrainingSchedule: string;
+	matricula: number;
+	nome: string;
+	diaVencimento: number;
+	ativo: boolean;
 };
 
 export default function DataTableDemo() {
@@ -37,19 +36,21 @@ export default function DataTableDemo() {
 	const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
 	const [rowSelection, setRowSelection] = React.useState({});
 
-	React.useEffect(() => {
-		async function fetchAlunos() {
-			try {
-				const response = await axios.get('/api/alunos');
-				setAlunos(response.data);
-			} catch (error) {
-				console.error('Erro ao buscar os alunos:', error);
-			} finally {
-				setIsLoading(false);
-			}
+	const fetchAlunos = React.useCallback(async () => {
+		setIsLoading(true);
+		try {
+			const response = await axios.get('http://localhost:3000/alunos');
+			setAlunos(response.data);
+		} catch (error) {
+			console.error('Erro ao buscar os alunos:', error);
+		} finally {
+			setIsLoading(false);
 		}
-		fetchAlunos();
 	}, []);
+
+	React.useEffect(() => {
+		fetchAlunos();
+	}, [fetchAlunos]);
 
 	const columns: ColumnDef<Aluno>[] = [
 		{
@@ -66,26 +67,25 @@ export default function DataTableDemo() {
 			enableHiding: false,
 		},
 		{
-			accessorKey: 'name',
-			header: () => <div className="font-bold">Aluno</div>,
-			cell: ({ row }) => <div className="capitalize font-light">{row.getValue('name')}</div>,
+			accessorKey: 'matricula',
+			header: () => <div className="font-bold">Matrícula</div>,
+			cell: ({ row }) => <div className="font-light">{row.getValue('matricula')}</div>,
 		},
 		{
-			accessorKey: 'flat',
-			header: () => <div className="font-bold">Plano</div>,
-			cell: ({ row }) => <div className="capitalize font-light">{row.getValue('flat')}</div>,
+			accessorKey: 'nome',
+			header: () => <div className="font-bold">Nome</div>,
+			cell: ({ row }) => <div className="font-light">{row.getValue('nome')}</div>,
 		},
 		{
-			accessorKey: 'TrainingSchedule',
-			header: () => <div className="font-bold">Horario Treino</div>,
-			cell: ({ row }) => <div className="capitalize font-light">{row.getValue('TrainingSchedule')}</div>,
+			accessorKey: 'diaVencimento',
+			header: () => <div className="font-bold">Dia de Vencimento</div>,
+			cell: ({ row }) => <div className="font-light">{row.getValue('diaVencimento')}</div>,
 		},
 		{
-			accessorKey: 'monthlyFee',
-			header: () => <div className="font-bold">Mensalidade</div>,
-			cell: ({ row }) => <div className="capitalize font-light">{row.getValue('monthlyFee')}</div>,
+			accessorKey: 'ativo',
+			header: () => <div className="font-bold">Ativo</div>,
+			cell: ({ row }) => <div className="font-light">{row.getValue('ativo') ? 'Sim' : 'Não'}</div>,
 		},
-
 		{
 			id: 'actions',
 			enableHiding: false,
@@ -123,10 +123,10 @@ export default function DataTableDemo() {
 			columnFilters,
 			columnVisibility,
 			rowSelection,
-			// pagination: {
-			// 	pageIndex: 0,
-			// 	pageSize: 14,
-			// },
+			pagination: {
+				pageIndex: 0,
+				pageSize: 13,
+			},
 		},
 	});
 
@@ -135,12 +135,12 @@ export default function DataTableDemo() {
 			<div className="flex items-center py-4 justify-between gap-10">
 				<Input
 					placeholder="Pesquisar alunos..."
-					value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-					onChange={(event) => table.getColumn('name')?.setFilterValue(event.target.value)}
+					value={(table.getColumn('nome')?.getFilterValue() as string) ?? ''}
+					onChange={(event) => table.getColumn('nome')?.setFilterValue(event.target.value)}
 					className="max-w-xl"
 				/>
 				<div>
-					<FormsCadastro />
+					<FormsCadastro onSave={fetchAlunos} />
 				</div>
 			</div>
 			<div className="rounded-md border">
@@ -155,27 +155,37 @@ export default function DataTableDemo() {
 						))}
 					</TableHeader>
 					<TableBody>
-						{table.getRowModel().rows.map((row) => (
-							<TableRow key={row.id}>
-								{row.getVisibleCells().map((cell) => (
-									<TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-								))}
+						{isLoading ? (
+							<TableRow>
+								<TableCell colSpan={columns.length} className="text-center">
+									Carregando...
+								</TableCell>
 							</TableRow>
-						))}
+						) : (
+							table.getRowModel().rows.map((row) => (
+								<TableRow key={row.id}>
+									{row.getVisibleCells().map((cell) => (
+										<TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+									))}
+								</TableRow>
+							))
+						)}
 					</TableBody>
 				</Table>
 			</div>
-			<div className="flex items-center  py-4 justify-center gap-5 mr-5 pt-5 ">
-				<Button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-					<ArrowLeft />
-				</Button>
-				<span>
-					{table.getState().pagination.pageIndex + 1} de {table.getPageCount()}
-				</span>
-				<Button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-					<ArrowRight />
-				</Button>
-			</div>
+			{alunos.length > 13 && (
+				<div className="flex items-center py-4 justify-center gap-5 mr-5 pt-5">
+					<Button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+						<ArrowLeft />
+					</Button>
+					<span>
+						{table.getState().pagination.pageIndex + 1} de {table.getPageCount()}
+					</span>
+					<Button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+						<ArrowRight />
+					</Button>
+				</div>
+			)}
 		</div>
 	);
 }

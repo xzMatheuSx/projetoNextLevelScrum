@@ -37,3 +37,6 @@ build/
 /node_modules/yargs
 /node_modules
 /node_modules/*
+NextLevel/bruno.json
+NextLevel/GetAlunos.bru
+NextLevel/PostAlunos.bru
