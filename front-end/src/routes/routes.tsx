@@ -2,7 +2,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import LoginPage from '../pages/login';
 import Alunos from '../pages/alunos';
-import Professores from '../pages/professores';
+import Usuarios from '../pages/usuarios';
 import Layout from '../layout';
 
 export default function AppRoutes() {
@@ -12,7 +12,7 @@ export default function AppRoutes() {
 				<Route path="/" element={<LoginPage />} />
 				<Route element={<Layout />}>
 					<Route path="/alunos" element={<Alunos />} />
-					<Route path="/professores" element={<Professores />} />
+					<Route path="/usuarios" element={<Usuarios />} />
 				</Route>
 			</Routes>
 		</BrowserRouter>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -7,13 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
 
 const schema = z.object({
@@ -21,12 +16,14 @@ const schema = z.object({
 	email: z.string().email('E-mail inválido'),
 	documento: z.string().regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, 'CPF inválido'),
 	telefone: z.string().regex(/^\(\d{2}\) \d{5}-\d{4}$/, 'Telefone inválido'),
-	horarioTreino: z.string().nonempty('Horário de treino é obrigatório'),
-	dataVencimento: z.date({
-		required_error: 'Data de vencimento é obrigatória',
-		invalid_type_error: 'Data inválida',
-	}),
+	horarioTreino: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Horário inválido'),
+	dataVencimento: z.string().refine((val) => {
+		const date = new Date(val.split('/').reverse().join('-'));
+		return date.getFullYear() >= 1900 && date.getFullYear() <= 2100;
+	}, 'Data de vencimento deve estar entre 1900 e 2100'),
 	planoContratado: z.string().nonempty('Plano contratado é obrigatório'),
+	dataNascimento: z.string().regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Data de nascimento inválida'),
+	responsavel: z.string().optional(),
 });
 
 interface FormData {
@@ -35,19 +32,20 @@ interface FormData {
 	documento: string;
 	telefone: string;
 	horarioTreino: string;
-	dataVencimento: Date;
+	dataVencimento: string;
 	planoContratado: string;
+	dataNascimento: string;
+	responsavel?: string;
 }
 
 interface FormsCadastroProps {
-	onSave: () => void; // Função para ser chamada após salvar os dados
+	onSave: () => void;
 }
 
 export default function FormsCadastro({ onSave }: FormsCadastroProps) {
 	const [isDialogOpen, setDialogOpen] = React.useState(false);
 	const openDialog = () => setDialogOpen(true);
 	const closeDialog = () => setDialogOpen(false);
-	const [date, setDate] = React.useState<Date | undefined>();
 
 	const {
 		handleSubmit,
@@ -63,27 +61,38 @@ export default function FormsCadastro({ onSave }: FormsCadastroProps) {
 			documento: '',
 			telefone: '',
 			horarioTreino: '',
-			dataVencimento: new Date(),
+			dataVencimento: '',
 			planoContratado: '',
+			dataNascimento: '',
+			responsavel: '',
 		},
 	});
 
+	const dataNascimento = useWatch({ control, name: 'dataNascimento' });
+	const age = dataNascimento ? new Date().getFullYear() - new Date(dataNascimento.split('/').reverse().join('-')).getFullYear() : 0;
+
 	const cleanData = (data: FormData) => {
+		const [dia] = data.dataVencimento.split('/');
+
 		return {
 			nome: data.name,
 			cpf: data.documento,
 			email: data.email,
 			telefone: data.telefone,
-			diaVencimento: data.dataVencimento.getDate(),
+			diaVencimento: parseInt(dia, 10),
 			usuarioAltId: 1,
+			dataNascimento: new Date(data.dataNascimento.split('/').reverse().join('-')).toISOString(),
+			responsavel: data.responsavel,
 		};
 	};
 
 	const onSubmit = async (data: FormData) => {
 		const result = await trigger();
 		if (!result) {
-			Object.keys(errors).forEach((field) => {
-				toast.error(errors[field as keyof FormData]?.message || 'Erro no formulário');
+			Object.entries(errors).forEach(([field, error]) => {
+				if (error?.message) {
+					toast.error(error.message.toString());
+				}
 			});
 			return;
 		}
@@ -103,14 +112,19 @@ export default function FormsCadastro({ onSave }: FormsCadastroProps) {
 			if (response.status === 201) {
 				toast.success('Aluno adicionado com sucesso!');
 				closeDialog();
-				onSave(); // Chama a função passada para atualizar a lista de alunos
+				onSave();
 			} else {
 				const errorData = await response.json();
 				throw new Error(errorData.message || 'Erro ao adicionar aluno');
 			}
-		} catch (error: any) {
-			console.error('Erro ao adicionar aluno:', error);
-			toast.error(error.message || 'Erro ao adicionar aluno. Tente novamente.');
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				console.error('Erro ao adicionar aluno:', error);
+				toast.error(error.message || 'Erro ao adicionar aluno. Tente novamente.');
+			} else {
+				console.error('Erro desconhecido:', error);
+				toast.error('Erro inesperado ao adicionar aluno.');
+			}
 		}
 	};
 
@@ -129,6 +143,16 @@ export default function FormsCadastro({ onSave }: FormsCadastroProps) {
 		setValue('telefone', formattedValue);
 	};
 
+	const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, field: any) => {
+		let value = e.target.value.replace(/\D/g, '').slice(0, 8);
+		if (value.length >= 5) {
+			value = value.replace(/(\d{2})(\d{2})(\d{1,4})/, '$1/$2/$3');
+		} else if (value.length >= 3) {
+			value = value.replace(/(\d{2})(\d{1,2})/, '$1/$2');
+		}
+		field.onChange(value);
+	};
+
 	return (
 		<>
 			<Button className="bg-[#006FEE]/50 hover:bg-[#006FEE] text-white" onClick={openDialog}>
@@ -142,6 +166,7 @@ export default function FormsCadastro({ onSave }: FormsCadastroProps) {
 							<DialogDescription>Preencha os detalhes do aluno e clique em Adicionar Aluno.</DialogDescription>
 						</DialogHeader>
 						<Separator className="my-5" />
+						<h3 className="text-lg font-semibold">Dados Pessoais</h3>
 						<div className="grid gap-5 py-4 grid-cols-1 sm:grid-cols-2">
 							<div className="grid items-center gap-4">
 								<Label htmlFor="name" className="text-right">
@@ -216,6 +241,51 @@ export default function FormsCadastro({ onSave }: FormsCadastroProps) {
 								/>
 							</div>
 							<div className="grid items-center gap-4">
+								<Label htmlFor="dataNascimento" className="text-right">
+									Data de Nascimento
+								</Label>
+								<Controller
+									name="dataNascimento"
+									control={control}
+									render={({ field }) => (
+										<Input
+											{...field}
+											placeholder="DD/MM/YYYY"
+											value={field.value}
+											onChange={(e) => handleDateChange(e, field)}
+											className={cn(
+												'bg-[#1F1F1F] border-1 text-white',
+												errors.dataNascimento ? 'border-red-400' : 'border-[#2A2A2A]'
+											)}
+										/>
+									)}
+								/>
+							</div>
+							{age < 18 && (
+								<div className="grid items-center gap-4">
+									<Label htmlFor="responsavel" className="text-right">
+										Responsável
+									</Label>
+									<Controller
+										name="responsavel"
+										control={control}
+										render={({ field }) => (
+											<Input
+												{...field}
+												className={cn(
+													'bg-[#1F1F1F] border-1 text-white',
+													errors.responsavel ? 'border-red-400' : 'border-[#2A2A2A]'
+												)}
+											/>
+										)}
+									/>
+								</div>
+							)}
+						</div>
+						<Separator className="my-5" />
+						<h3 className="text-lg font-semibold">Cadastro Academia</h3>
+						<div className="grid gap-5 py-4 grid-cols-1 sm:grid-cols-2">
+							<div className="grid items-center gap-4">
 								<Label htmlFor="horarioTreino" className="text-right">
 									Horário Treino
 								</Label>
@@ -225,7 +295,7 @@ export default function FormsCadastro({ onSave }: FormsCadastroProps) {
 									render={({ field }) => (
 										<Input
 											{...field}
-											type="time"
+											placeholder="HH:MM"
 											className={cn(
 												'bg-[#1F1F1F] border-1 text-white',
 												errors.horarioTreino ? 'border-red-400' : 'border-[#2A2A2A]'
@@ -238,24 +308,22 @@ export default function FormsCadastro({ onSave }: FormsCadastroProps) {
 								<Label htmlFor="dataVencimento" className="text-right">
 									Data Vencimento
 								</Label>
-								<Popover>
-									<PopoverTrigger asChild>
-										<Button
-											variant={'outline'}
+								<Controller
+									name="dataVencimento"
+									control={control}
+									render={({ field }) => (
+										<Input
+											{...field}
+											placeholder="DD/MM/YYYY"
+											value={field.value}
+											onChange={(e) => handleDateChange(e, field)}
 											className={cn(
-												'w-full justify-start text-left font-normal ',
-												!date && 'text-muted-foreground',
+												'bg-[#1F1F1F] border-1 text-white',
 												errors.dataVencimento ? 'border-red-400' : 'border-[#2A2A2A]'
 											)}
-										>
-											<CalendarIcon className="mr-2 h-4 w-4 text-white" />
-											{date ? format(date, 'dd/MM/yyyy', { locale: ptBR }) : <span>Selecione a data</span>}
-										</Button>
-									</PopoverTrigger>
-									<PopoverContent className="w-auto p-0">
-										<Calendar mode="single" selected={date} onSelect={(d) => setDate(d || undefined)} locale={ptBR} />
-									</PopoverContent>
-								</Popover>
+										/>
+									)}
+								/>
 							</div>
 						</div>
 						<div className="grid items-center gap-4 pt-3">

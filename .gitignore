@@ -40,3 +40,5 @@ build/
 NextLevel/bruno.json
 NextLevel/GetAlunos.bru
 NextLevel/PostAlunos.bru
+NextLevel/GetUsuarios.bru
+NextLevel/PostUsuarios.bru
