@@ -56,11 +56,11 @@ const data = {
 			items: [
 				{
 					title: 'Alunos',
-					url: '#',
+					url: '/alunos',
 				},
 				{
-					title: 'Funcionarios',
-					url: '#',
+					title: 'Usuarios',
+					url: '/usuarios',
 				},
 			],
 		},
