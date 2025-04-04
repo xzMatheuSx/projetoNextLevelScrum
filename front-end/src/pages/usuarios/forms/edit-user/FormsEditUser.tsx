@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -12,30 +13,29 @@ import { toast } from 'sonner';
 import { EditUser } from './edit-user';
 import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
 import { Eye, EyeOff } from 'lucide-react';
-import axios from 'axios';
 
 const schema = z.object({
 	nome: z
 		.string()
 		.optional()
 		.nullable()
-		.refine((value) => !value || value.length > 0, 'Nome é obrigatório'),
+		.refine((val) => !val || val.length > 0, 'Nome é obrigatório'),
 	usuario: z
 		.string()
 		.optional()
 		.nullable()
-		.refine((value) => !value || value.length > 0, 'Usuário é obrigatório'),
+		.refine((val) => !val || val.length > 0, 'Usuário é obrigatório'),
 	email: z
 		.string()
 		.optional()
 		.nullable()
-		.refine((value) => !value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value), 'E-mail inválido'),
+		.refine((val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), 'E-mail inválido'),
 	senha: z
 		.string()
 		.optional()
 		.nullable()
 		.refine(
-			(value) => !value || (value.length >= 10 && /[!@#$%^&*(),.?":{}|<>]/.test(value)),
+			(val) => !val || (val.length >= 10 && /[!@#$%^&*(),.?":{}|<>]/.test(val)),
 			'Senha deve ter no mínimo 10 caracteres e conter ao menos um caractere especial'
 		),
 });
@@ -59,39 +59,32 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 		defaultValues: initialData,
 	});
 
-	const [isDialogOpen, setDialogOpen] = React.useState(false);
+	const [isOpen, setIsOpen] = React.useState(false);
 	const [showPassword, setShowPassword] = React.useState(false);
 
-	const openDialog = (event: React.MouseEvent) => {
-		event.preventDefault();
-		event.stopPropagation();
-		setDialogOpen(true);
+	const handleOpenDialog = (e: React.MouseEvent) => {
+		e.preventDefault();
+		e.stopPropagation();
+		setIsOpen(true);
 	};
 
-	const closeDialog = () => {
-		setDialogOpen(false);
+	const handleCloseDialog = () => {
+		setIsOpen(false);
 		reset(initialData);
 	};
 
 	const onSubmit = async (data: FormData) => {
-		const updatedData = Object.keys(data).reduce((acc, key) => {
-			if (data[key as keyof FormData] !== initialData[key as keyof FormData]) {
-				acc[key as keyof FormData] = data[key as keyof FormData];
-			}
-			return acc;
-		}, {} as FormData);
+		// Só envia dados modificados
+		const updatedData = Object.fromEntries(Object.entries(data).filter(([key, value]) => value !== initialData[key as keyof FormData]));
 
 		try {
 			await EditUser(userId, updatedData);
 			toast.success('Usuário atualizado com sucesso!');
 			onSave();
-			closeDialog();
-		} catch (error: unknown) {
-			if (axios.isAxiosError(error)) {
-				toast.error(`Erro ao atualizar usuário: ${error.response?.data?.message || error.message}`);
-			} else {
-				toast.error('Erro ao atualizar usuário');
-			}
+			handleCloseDialog();
+		} catch (err: unknown) {
+			const message = err instanceof Error ? err.message : 'Erro ao atualizar usuário';
+			toast.error(message);
 		}
 	};
 
@@ -101,34 +94,33 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 		});
 	}, [errors]);
 
-	const preventSpaceClose = (event: React.KeyboardEvent) => {
-		if (event.key === ' ') {
-			event.stopPropagation();
-		}
+	const preventSpaceClose = (e: React.KeyboardEvent) => {
+		if (e.key === ' ') e.stopPropagation();
 	};
 
 	return (
 		<>
-			<DropdownMenuItem className="text-white cursor-pointer" onClick={openDialog}>
+			<DropdownMenuItem className="text-white cursor-pointer" onClick={handleOpenDialog}>
 				Editar Usuário
 			</DropdownMenuItem>
-			<Dialog open={isDialogOpen} onOpenChange={(isOpen) => setDialogOpen(isOpen)} modal>
+			<Dialog open={isOpen} onOpenChange={setIsOpen} modal>
 				<DialogContent
-					className="sm:max-w-[425px] bg-[#1a1a1a] border-1 border-[#2A2A2A]"
+					className="sm:max-w-[425px] bg-[#1a1a1a] border border-[#2A2A2A]"
 					onClick={(e) => e.stopPropagation()}
 					onKeyDown={preventSpaceClose}
 				>
 					<form onSubmit={handleSubmit(onSubmit)}>
 						<DialogHeader>
 							<DialogTitle>Editar Usuário</DialogTitle>
-							<DialogDescription>Atualize os detalhes do usuário e clique em Salvar.</DialogDescription>
+							<DialogDescription>Atualize os dados desejados e clique em Salvar.</DialogDescription>
 						</DialogHeader>
+
 						<Separator className="my-5" />
+
 						<div className="grid gap-5 py-4 grid-cols-1 sm:grid-cols-2">
+							{/* Nome */}
 							<div className="grid items-center gap-4">
-								<Label htmlFor="nome" className="text-right">
-									Nome
-								</Label>
+								<Label htmlFor="nome">Nome</Label>
 								<Controller
 									name="nome"
 									control={control}
@@ -136,15 +128,15 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 										<Input
 											{...field}
 											value={field.value ?? ''}
-											className={cn('bg-[#1F1F1F] border-1 text-white', errors.nome ? 'border-red-400' : 'border-[#2A2A2A]')}
+											className={cn('bg-[#1F1F1F] border', errors.nome ? 'border-red-400' : 'border-[#2A2A2A]')}
 										/>
 									)}
 								/>
 							</div>
+
+							{/* Usuário */}
 							<div className="grid items-center gap-4">
-								<Label htmlFor="usuario" className="text-right">
-									Usuário
-								</Label>
+								<Label htmlFor="usuario">Usuário</Label>
 								<Controller
 									name="usuario"
 									control={control}
@@ -152,18 +144,15 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 										<Input
 											{...field}
 											value={field.value ?? ''}
-											className={cn(
-												'bg-[#1F1F1F] border-1 text-white',
-												errors.usuario ? 'border-red-400' : 'border-[#2A2A2A]'
-											)}
+											className={cn('bg-[#1F1F1F] border', errors.usuario ? 'border-red-400' : 'border-[#2A2A2A]')}
 										/>
 									)}
 								/>
 							</div>
+
+							{/* Email */}
 							<div className="grid items-center gap-4">
-								<Label htmlFor="email" className="text-right">
-									E-mail
-								</Label>
+								<Label htmlFor="email">E-mail</Label>
 								<Controller
 									name="email"
 									control={control}
@@ -172,15 +161,15 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 											{...field}
 											type="email"
 											value={field.value ?? ''}
-											className={cn('bg-[#1F1F1F] border-1 text-white', errors.email ? 'border-red-400' : 'border-[#2A2A2A]')}
+											className={cn('bg-[#1F1F1F] border', errors.email ? 'border-red-400' : 'border-[#2A2A2A]')}
 										/>
 									)}
 								/>
 							</div>
+
+							{/* Senha */}
 							<div className="grid items-center gap-4 relative">
-								<Label htmlFor="senha" className="text-right">
-									Senha
-								</Label>
+								<Label htmlFor="senha">Senha</Label>
 								<Controller
 									name="senha"
 									control={control}
@@ -190,15 +179,12 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 												{...field}
 												type={showPassword ? 'text' : 'password'}
 												value={field.value ?? ''}
-												className={cn(
-													'bg-[#1F1F1F] border-1 text-white',
-													errors.senha ? 'border-red-400' : 'border-[#2A2A2A]'
-												)}
+												className={cn('bg-[#1F1F1F] border pr-10', errors.senha ? 'border-red-400' : 'border-[#2A2A2A]')}
 											/>
 											<button
 												type="button"
 												className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
-												onClick={() => setShowPassword(!showPassword)}
+												onClick={() => setShowPassword((prev) => !prev)}
 											>
 												{showPassword ? <EyeOff /> : <Eye />}
 											</button>
@@ -207,7 +193,9 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 								/>
 							</div>
 						</div>
+
 						<Separator className="my-5" />
+
 						<DialogFooter>
 							<Button type="submit" className="bg-[#006FEE] text-white">
 								Salvar

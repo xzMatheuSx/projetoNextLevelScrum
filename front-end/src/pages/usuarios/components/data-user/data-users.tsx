@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import {
 	ColumnDef,
@@ -12,23 +14,18 @@ import {
 	useReactTable,
 } from '@tanstack/react-table';
 import { ArrowLeft, ArrowRight, PencilLine } from 'lucide-react';
-import { GetUsers } from './get-users';
+
+import { getUsuarios, Usuario } from './get-users';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+
 import FormsUsuarios from '../../forms/create-forms-user/formsUser';
 import FormsEditUser from '../../forms/edit-user/FormsEditUser';
 import FormsDeleteUser from '../delete-user/delete-user-form';
-
-export type Usuario = {
-	id: string;
-	nome: string;
-	usuario: string;
-	email: string;
-};
 
 export default function DataTableUsers() {
 	const [usuarios, setUsuarios] = React.useState<Usuario[]>([]);
@@ -39,7 +36,7 @@ export default function DataTableUsers() {
 
 	const fetchUsuarios = React.useCallback(async () => {
 		try {
-			const data = await GetUsers();
+			const data = await getUsuarios();
 			setUsuarios(data);
 		} catch (error) {
 			console.error('Erro ao buscar os usuários:', error);
@@ -77,7 +74,6 @@ export default function DataTableUsers() {
 			header: () => <div className="font-bold">Nome</div>,
 			cell: ({ row }) => <div className="font-light">{row.getValue('nome')}</div>,
 		},
-
 		{
 			accessorKey: 'email',
 			header: () => <div className="font-bold">E-mail</div>,

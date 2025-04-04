@@ -1,2 +1,0 @@
-# projetoNextLevelScrum
- Next Level 

@@ -12,53 +12,42 @@ import {
 	useReactTable,
 } from '@tanstack/react-table';
 import { ArrowLeft, ArrowRight, PencilLine } from 'lucide-react';
-import { getUsuarios } from './get-usuarios';
-
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import FormsUsuarios from '../../forms/create-forms-user/formsUser';
-import FormsEditUser from '../../forms/edit-user/FormsEditUser';
-import FormsDeleteUser from '../delete-user/delete-user-form';
+import FormsRegister from '../../forms/forms-create-studant/forms-create-studant';
+import { getAlunos, Aluno } from './get-studant';
+import { toast } from 'sonner';
 
-export type Usuario = {
-	id: string;
-	nome: string;
-	usuario: string;
-	email: string;
-};
-
-export default function DataTableUsuarios() {
-	const [usuarios, setUsuarios] = React.useState<Usuario[]>([]);
+export default function DataTableAlunos() {
+	const [alunos, setAlunos] = React.useState<Aluno[]>([]);
+	const [isLoading, setIsLoading] = React.useState<boolean>(true);
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 	const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-	const [rowSelection, setRowSelection] = React.useState({});
+	const [rowSelection, setRowSelection] = React.useState<ReactTable.SelectionState>({});
 
-	const fetchUsuarios = React.useCallback(async () => {
+	const fetchAlunos = React.useCallback(async () => {
+		setIsLoading(true);
 		try {
-			const data = await getUsuarios();
-			setUsuarios(data);
-		} catch (error) {
-			console.error('Erro ao buscar os usuários:', error);
+			const data = await getAlunos();
+			setAlunos(data);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				toast.error(error.message);
+			}
+		} finally {
+			setIsLoading(false);
 		}
 	}, []);
 
 	React.useEffect(() => {
-		fetchUsuarios();
-	}, [fetchUsuarios]);
+		fetchAlunos();
+	}, [fetchAlunos]);
 
-	const handleSave = async () => {
-		await fetchUsuarios();
-	};
-
-	const handleDelete = async () => {
-		await fetchUsuarios();
-	};
-
-	const columns: ColumnDef<Usuario>[] = [
+	const columns: ColumnDef<Aluno>[] = [
 		{
 			id: 'select',
 			header: ({ table }) => (
@@ -73,15 +62,24 @@ export default function DataTableUsuarios() {
 			enableHiding: false,
 		},
 		{
+			accessorKey: 'matricula',
+			header: () => <div className="font-bold">Matrícula</div>,
+			cell: ({ row }) => <div className="font-light">{row.getValue('matricula')}</div>,
+		},
+		{
 			accessorKey: 'nome',
 			header: () => <div className="font-bold">Nome</div>,
 			cell: ({ row }) => <div className="font-light">{row.getValue('nome')}</div>,
 		},
-
 		{
-			accessorKey: 'email',
-			header: () => <div className="font-bold">E-mail</div>,
-			cell: ({ row }) => <div className="font-light">{row.getValue('email')}</div>,
+			accessorKey: 'diaVencimento',
+			header: () => <div className="font-bold">Dia de Vencimento</div>,
+			cell: ({ row }) => <div className="font-light">{row.getValue('diaVencimento')}</div>,
+		},
+		{
+			accessorKey: 'ativo',
+			header: () => <div className="font-bold">Ativo</div>,
+			cell: ({ row }) => <div className="font-light">{row.getValue('ativo') ? 'Sim' : 'Não'}</div>,
 		},
 		{
 			id: 'actions',
@@ -95,30 +93,17 @@ export default function DataTableUsuarios() {
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
-						<DropdownMenuItem>
-							<FormsEditUser
-								userId={row.original.id}
-								initialData={{
-									nome: row.original.nome,
-									usuario: row.original.usuario,
-									email: row.original.email,
-									senha: '',
-								}}
-								onSave={handleSave}
-							/>
-						</DropdownMenuItem>
+						<DropdownMenuItem>Editar Aluno</DropdownMenuItem>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem className="bg-red-400/25 hover:bg-red-400">
-							<FormsDeleteUser userId={row.original.id} onDelete={handleDelete} />
-						</DropdownMenuItem>
+						<DropdownMenuItem className="bg-red-400/25 hover:bg-red-400">Excluir aluno</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 			),
 		},
 	];
 
-	const table = useReactTable({
-		data: usuarios,
+	const table = useReactTable<Aluno>({
+		data: alunos,
 		columns,
 		onSortingChange: setSorting,
 		onColumnFiltersChange: setColumnFilters,
@@ -144,13 +129,13 @@ export default function DataTableUsuarios() {
 		<div className="w-full">
 			<div className="flex items-center py-4 justify-between gap-10">
 				<Input
-					placeholder="Pesquisar usuários..."
+					placeholder="Pesquisar alunos..."
 					value={(table.getColumn('nome')?.getFilterValue() as string) ?? ''}
 					onChange={(event) => table.getColumn('nome')?.setFilterValue(event.target.value)}
 					className="max-w-xl"
 				/>
 				<div>
-					<FormsUsuarios onSave={handleSave} />
+					<FormsRegister onSave={fetchAlunos} />
 				</div>
 			</div>
 			<div className="rounded-md border">
@@ -165,17 +150,25 @@ export default function DataTableUsuarios() {
 						))}
 					</TableHeader>
 					<TableBody>
-						{table.getRowModel().rows.map((row) => (
-							<TableRow key={row.id}>
-								{row.getVisibleCells().map((cell) => (
-									<TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-								))}
+						{isLoading ? (
+							<TableRow>
+								<TableCell colSpan={columns.length} className="text-center">
+									Carregando...
+								</TableCell>
 							</TableRow>
-						))}
+						) : (
+							table.getRowModel().rows.map((row) => (
+								<TableRow key={row.id}>
+									{row.getVisibleCells().map((cell) => (
+										<TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+									))}
+								</TableRow>
+							))
+						)}
 					</TableBody>
 				</Table>
 			</div>
-			{usuarios.length > 13 && (
+			{alunos.length > 13 && (
 				<div className="flex items-center py-4 justify-center gap-5 mr-5 pt-5">
 					<Button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
 						<ArrowLeft />
