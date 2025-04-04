@@ -5,6 +5,7 @@ import { Usuario } from './entities/usuario.entity';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { PesquisaUsuarioDTO } from './dto/pesquisa-usuario.dto';
+import { LoginUsuarioDTO } from './dto/login-usuario.dto';
 
 
 @Injectable()
@@ -29,6 +30,7 @@ export class UsuariosService {
     const aux = await this.UsuariosRepository.save(Usuario);
     return (`Usuario ${aux.nome} cadastrado com sucesso`)
   }
+
 
   async findAll(): Promise<PesquisaUsuarioDTO[]> {
     let users = await this.UsuariosRepository.find();

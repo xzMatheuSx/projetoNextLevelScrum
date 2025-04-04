@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ProdutoTipoService } from './produto-tipo.service';
 import { CreateProdutoTipoDto } from './dto/create-produto-tipo.dto';
 import { UpdateProdutoTipoDto } from './dto/update-produto-tipo.dto';
 import { ListProdutoTipoDto } from './dto/list-produto-tipo.dto';
 import { ApiOperation } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('produto-tipo')
 export class ProdutoTipoController {
   constructor(private readonly produtoTipoService: ProdutoTipoService) {}
