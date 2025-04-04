@@ -41,14 +41,14 @@ export class CreateAlunoDto {
   @IsNumber()
   @ApiProperty({ description: 'Usuario alt' })
 
-  usuarioAltId: string;
+  usuarioAlt: number;
 
   @ApiProperty({ description: 'Data nascimento' })
   @IsNotEmpty()
   dataNascimento: Date;
 
   @ApiProperty({ description: 'Horario estimado treino' })
-
+  @IsNotEmpty()
   horarioEstimadoTreino: string;
 
   @ApiProperty({ description: 'Responsavel' })

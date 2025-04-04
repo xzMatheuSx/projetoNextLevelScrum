@@ -1,4 +1,4 @@
-/*import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { MensalidadeService } from './mensalidade.service';
 
 describe('MensalidadeService', () => {
@@ -16,4 +16,3 @@ describe('MensalidadeService', () => {
     expect(service).toBeDefined();
   });
 });
-*/
