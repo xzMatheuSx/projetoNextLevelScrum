@@ -2,6 +2,7 @@ import { PartialType } from '@nestjs/mapped-types';
 import { CreatePlanoAlunoDto } from './create-plano-aluno.dto';
 import { IsOptional, IsDateString, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { OneToMany } from 'typeorm';
 
 export class UpdatePlanoAlunoDto extends PartialType(CreatePlanoAlunoDto) {
   @IsOptional()
@@ -23,4 +24,5 @@ export class UpdatePlanoAlunoDto extends PartialType(CreatePlanoAlunoDto) {
   @IsNumber()
   @ApiProperty({ description: 'Usuario alt' })
   usuarioAlt?: number; 
+
 }

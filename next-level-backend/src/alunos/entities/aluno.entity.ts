@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, JoinColumn, OneToMany } from 'typeorm';
 import { Usuario} from 'src/usuarios/entities/usuario.entity';
 import { IsNotEmpty, IsString } from 'class-validator';
+import { Mensalidade } from 'src/mensalidade/entities/mensalidade.entity';
 @Entity()
 export class Aluno {
 
@@ -47,4 +48,7 @@ usuarioAlt: Usuario;
 
   @Column({ nullable: true }) 
   responsavel: String
+
+  @OneToMany(() => Mensalidade, mensalidade => mensalidade.aluno)
+  mensalidades: Mensalidade[];
 }
