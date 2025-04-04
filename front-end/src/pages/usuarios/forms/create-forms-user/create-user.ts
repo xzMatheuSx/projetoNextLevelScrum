@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export async function createUsuario(data: unknown) {
+export async function CreateUser(data: unknown) {
 	try {
 		const response = await axios.post('http://localhost:3000/usuarios', data);
 		return response.data;

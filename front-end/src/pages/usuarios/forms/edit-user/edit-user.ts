@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export async function editUser(id: string, data: unknown) {
+export async function EditUser(id: string, data: unknown) {
 	try {
 		const response = await axios.patch(`http://localhost:3000/usuarios/${id}`, data);
 		return response.data;

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { deleteUser } from './delete-user';
+import { DeleteUser } from './delete-user';
 import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
 import axios from 'axios';
 
@@ -25,7 +25,7 @@ export default function FormsDeleteUser({ userId, onDelete }: FormsDeleteUserPro
 
 	const handleDelete = async () => {
 		try {
-			await deleteUser(userId);
+			await DeleteUser(userId);
 			toast.success('Usuário deletado com sucesso!');
 			onDelete();
 			closeDialog();

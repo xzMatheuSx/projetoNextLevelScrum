@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { editUser } from './edit-user';
+import { EditUser } from './edit-user';
 import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
 import { Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
@@ -82,7 +82,7 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 		}, {} as FormData);
 
 		try {
-			await editUser(userId, updatedData);
+			await EditUser(userId, updatedData);
 			toast.success('Usuário atualizado com sucesso!');
 			onSave();
 			closeDialog();
