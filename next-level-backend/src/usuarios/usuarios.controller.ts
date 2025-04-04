@@ -3,6 +3,7 @@ import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { LoginUsuarioDTO } from './dto/login-usuario.dto';
 
 @ApiTags('usuarios')
 @Controller('usuarios')
@@ -14,6 +15,7 @@ export class UsuariosController {
   create(@Body() createUsuarioDto: CreateUsuarioDto) {
     return this.usuariosService.create(createUsuarioDto);
   }
+
 
   @Get()
   @ApiOperation({ summary: 'Retorna todos os usuarios' })

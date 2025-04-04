@@ -30,6 +30,8 @@ import { EquipamentosManutencao } from './equipamentos-manutencao/entities/equip
 import { MovimentoEstoque } from './movimento-estoque/entities/movimento-estoque.entity';
 import { Venda } from './venda/entities/venda.entity';
 import { VendaProduto } from './venda-produto/entities/venda-produto.entity';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 
 @Module({
@@ -55,7 +57,11 @@ import { VendaProduto } from './venda-produto/entities/venda-produto.entity';
     EquipamentosManutencaoModule, AlunoPresencaModule,
     PagamentoAlunoModule, PlanoAlunoModule, PlanoModule, 
     ProdutoTipoModule, ProdutoModule, MovimentoEstoqueModule, 
-    VendaModule, VendaProdutoModule],
+    VendaModule, VendaProdutoModule, AuthModule,
+    ConfigModule.forRoot({
+        isGlobal: true, 
+      }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
