@@ -48,15 +48,15 @@ export class UsuariosService {
 
   async remove(id: number){
     try {
-      const usu = await this.UsuariosRepository.findOne({ where: { id} });
+      const usuario = await this.UsuariosRepository.findOne({ where: { id: id} });
          
-      if (!Usuario) {
+      if (!usuario) {
         throw new NotFoundException(`Usuario com o id ${id} não encontrado`);
       }
       
-      usu!.ativo = false 
+      usuario!.ativo = false 
 
-      this.UsuariosRepository.save(usu!);
+      this.UsuariosRepository.save(usuario!);
 
     } catch (error) {
       console.error(`Erro ao remover Usuario ${id}:`, error);

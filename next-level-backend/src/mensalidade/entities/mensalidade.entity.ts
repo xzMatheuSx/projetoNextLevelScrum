@@ -1,4 +1,4 @@
-import { Aluno } from "src/alunos/entities/aluno.entity";
+/*import { Aluno } from "src/alunos/entities/aluno.entity";
 import { Plano } from "src/plano/entities/plano.entity";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
@@ -26,3 +26,4 @@ export class Mensalidade {
 plano: Plano;
 
 }
+*/

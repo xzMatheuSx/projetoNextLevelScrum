@@ -39,7 +39,7 @@ export class UsuariosController {
   @Delete(':id')
   @ApiOperation({ summary: 'Exclusão de usuario' })
 
-  remove(@Param('id') id: string) {
-    return this.usuariosService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.usuariosService.remove(id);
   }
 }
