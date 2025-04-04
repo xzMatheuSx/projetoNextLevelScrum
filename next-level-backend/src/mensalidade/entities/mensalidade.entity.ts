@@ -10,8 +10,8 @@ export class Mensalidade {
   @ManyToOne(() => Aluno, aluno => aluno.mensalidades)
   aluno: Aluno;
 
-  @Column({ type: 'date' })
-  vencimento: Date;
+  @Column()
+  vencimento: string;
 
   @Column({ default: false })
   pago: boolean;

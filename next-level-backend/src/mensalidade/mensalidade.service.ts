@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Mensalidade } from './entities/mensalidade.entity';
@@ -24,17 +24,16 @@ export class MensalidadeService {
     try{
       const id = createMensalidadeDto.id
       const matricula = createMensalidadeDto.matricula
-      const vencimento = createMensalidadeDto.vencimento
       const aluno = await this.alunoRepository.findOneBy({ matricula: matricula });
       const plano = await this.planoRepository.findOne({ where: { id: id } });
-    
+      const vencimento = aluno?.diaVencimento
       if (!aluno || !plano) throw new NotFoundException('Aluno ou plano não encontrado');
     
       const nova = this.mensalidadeRepository.create({
         aluno,
     plano,
     valor: plano.valor,
-    vencimento: aluno.diaVencimento,
+    vencimento,
     pago: createMensalidadeDto.pago,
     dataPagamento: createMensalidadeDto.dataPagamento
       });
@@ -42,7 +41,7 @@ export class MensalidadeService {
       const aux = await this.mensalidadeRepository.save(nova);
       return (`Mensalidade do aluno ${aux.aluno.nome} paga com sucesso`) 
     }catch(error){
-      throw new error ("erro ao registrar mensalidade")
+      throw new InternalServerErrorException(error.message);
     }
    
   }

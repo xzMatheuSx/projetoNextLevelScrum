@@ -24,8 +24,8 @@ export class Aluno {
     @Column()
     telefone:string
 
-    @Column({nullable:true})
-    diaVencimento: number
+    @Column()
+    diaVencimento: string
 
     
     @ManyToOne(() => Usuario, { eager: true }) 

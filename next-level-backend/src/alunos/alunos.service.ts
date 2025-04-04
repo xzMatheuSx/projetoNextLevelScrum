@@ -60,7 +60,8 @@ export class AlunosService {
         }
         const aluno = this.alunosRepository.create({
             ...createAlunoDto,
-            usuarioAlt: { id: createAlunoDto.usuarioAlt }  // transforma o ID num objeto do tipo Usuario
+            usuarioAlt: { id: createAlunoDto.usuarioAlt },
+            diaVencimento: String(createAlunoDto.diaVencimento), 
           });
           
           aluno.ativo = true;

@@ -11,10 +11,6 @@ export class CreateMensalidadeDto {
     id:number
 
     @IsNotEmpty()
-    @IsNumber()
-    vencimento: Date
-
-    @IsNotEmpty()
     @IsBoolean()
     pago: boolean
 
