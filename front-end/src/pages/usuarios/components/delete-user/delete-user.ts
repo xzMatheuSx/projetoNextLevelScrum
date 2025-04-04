@@ -1,6 +1,15 @@
 import axios from 'axios';
 
-export const deleteUser = async (userId: string) => {
-	const response = await axios.delete(`/api/users/${userId}`);
-	return response.data;
-};
+export async function deleteUser(userId: string) {
+	try {
+		const response = await axios.delete(`http://localhost:3000/usuarios/${userId}`);
+		return response.data;
+	} catch (error: unknown) {
+		if (axios.isAxiosError(error)) {
+			const errorMessage = error.response?.data?.message || error.message;
+			throw new Error(`Erro ao deletar usuário: ${errorMessage}`);
+		} else {
+			throw new Error('Erro ao deletar usuário');
+		}
+	}
+}

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { deleteUser } from './delete-user';
 import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
+import axios from 'axios';
 
 interface FormsDeleteUserProps {
 	userId: string;
@@ -28,8 +29,12 @@ export default function FormsDeleteUser({ userId, onDelete }: FormsDeleteUserPro
 			toast.success('Usuário deletado com sucesso!');
 			onDelete();
 			closeDialog();
-		} catch (error: any) {
-			toast.error(`Erro ao deletar usuário: ${error.message}`);
+		} catch (error: unknown) {
+			if (axios.isAxiosError(error)) {
+				toast.error(`Erro ao deletar usuário: ${error.response?.data?.message || error.message}`);
+			} else {
+				toast.error('Erro ao deletar usuário');
+			}
 		}
 	};
 
@@ -42,8 +47,9 @@ export default function FormsDeleteUser({ userId, onDelete }: FormsDeleteUserPro
 				<DialogContent className="sm:max-w-[425px] bg-[#1a1a1a] border-1 border-[#2A2A2A]">
 					<DialogHeader>
 						<DialogTitle>Deletar Usuário</DialogTitle>
-						<DialogDescription>Tem certeza que deseja deletar este usuário? Esta ação não pode ser desfeita.</DialogDescription>
 					</DialogHeader>
+
+					<DialogDescription>Tem certeza que deseja deletar este usuário? Esta ação não pode ser desfeita.</DialogDescription>
 					<DialogFooter>
 						<Button onClick={closeDialog} className="bg-gray-500 text-white">
 							Cancelar

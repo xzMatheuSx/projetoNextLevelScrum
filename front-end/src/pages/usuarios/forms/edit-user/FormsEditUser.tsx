@@ -12,15 +12,32 @@ import { toast } from 'sonner';
 import { editUser } from './edit-user';
 import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
 import { Eye, EyeOff } from 'lucide-react';
+import axios from 'axios';
 
 const schema = z.object({
-	nome: z.string().nonempty('Nome é obrigatório'),
-	usuario: z.string().nonempty('Usuário é obrigatório'),
-	email: z.string().email('E-mail inválido').nonempty('E-mail é obrigatório'),
+	nome: z
+		.string()
+		.optional()
+		.nullable()
+		.refine((value) => !value || value.length > 0, 'Nome é obrigatório'),
+	usuario: z
+		.string()
+		.optional()
+		.nullable()
+		.refine((value) => !value || value.length > 0, 'Usuário é obrigatório'),
+	email: z
+		.string()
+		.optional()
+		.nullable()
+		.refine((value) => !value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value), 'E-mail inválido'),
 	senha: z
 		.string()
-		.min(6, 'Senha deve ter no mínimo 10 caracteres')
-		.regex(/[!@#$%^&*(),.?":{}|<>]/, 'Senha deve conter ao menos um caractere especial'),
+		.optional()
+		.nullable()
+		.refine(
+			(value) => !value || (value.length >= 10 && /[!@#$%^&*(),.?":{}|<>]/.test(value)),
+			'Senha deve ter no mínimo 10 caracteres e conter ao menos um caractere especial'
+		),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -37,7 +54,6 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 		handleSubmit,
 		reset,
 		formState: { errors },
-		setValue,
 	} = useForm<FormData>({
 		resolver: zodResolver(schema),
 		defaultValues: initialData,
@@ -50,25 +66,32 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 		event.preventDefault();
 		event.stopPropagation();
 		setDialogOpen(true);
-		setValue('nome', initialData.nome);
-		setValue('usuario', initialData.usuario);
-		setValue('email', initialData.email);
-		setValue('senha', initialData.senha);
 	};
 
 	const closeDialog = () => {
 		setDialogOpen(false);
-		reset();
+		reset(initialData);
 	};
 
 	const onSubmit = async (data: FormData) => {
+		const updatedData = Object.keys(data).reduce((acc, key) => {
+			if (data[key as keyof FormData] !== initialData[key as keyof FormData]) {
+				acc[key as keyof FormData] = data[key as keyof FormData];
+			}
+			return acc;
+		}, {} as FormData);
+
 		try {
-			await editUser(userId, data);
+			await editUser(userId, updatedData);
 			toast.success('Usuário atualizado com sucesso!');
 			onSave();
 			closeDialog();
-		} catch (error: any) {
-			toast.error(`Erro ao atualizar usuário: ${error.message}`);
+		} catch (error: unknown) {
+			if (axios.isAxiosError(error)) {
+				toast.error(`Erro ao atualizar usuário: ${error.response?.data?.message || error.message}`);
+			} else {
+				toast.error('Erro ao atualizar usuário');
+			}
 		}
 	};
 
@@ -78,13 +101,23 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 		});
 	}, [errors]);
 
+	const preventSpaceClose = (event: React.KeyboardEvent) => {
+		if (event.key === ' ') {
+			event.stopPropagation();
+		}
+	};
+
 	return (
 		<>
 			<DropdownMenuItem className="text-white cursor-pointer" onClick={openDialog}>
 				Editar Usuário
 			</DropdownMenuItem>
 			<Dialog open={isDialogOpen} onOpenChange={(isOpen) => setDialogOpen(isOpen)} modal>
-				<DialogContent className="sm:max-w-[425px] bg-[#1a1a1a] border-1 border-[#2A2A2A]" onClick={(e) => e.stopPropagation()}>
+				<DialogContent
+					className="sm:max-w-[425px] bg-[#1a1a1a] border-1 border-[#2A2A2A]"
+					onClick={(e) => e.stopPropagation()}
+					onKeyDown={preventSpaceClose}
+				>
 					<form onSubmit={handleSubmit(onSubmit)}>
 						<DialogHeader>
 							<DialogTitle>Editar Usuário</DialogTitle>
@@ -102,6 +135,7 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 									render={({ field }) => (
 										<Input
 											{...field}
+											value={field.value ?? ''}
 											className={cn('bg-[#1F1F1F] border-1 text-white', errors.nome ? 'border-red-400' : 'border-[#2A2A2A]')}
 										/>
 									)}
@@ -117,6 +151,7 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 									render={({ field }) => (
 										<Input
 											{...field}
+											value={field.value ?? ''}
 											className={cn(
 												'bg-[#1F1F1F] border-1 text-white',
 												errors.usuario ? 'border-red-400' : 'border-[#2A2A2A]'
@@ -136,6 +171,7 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 										<Input
 											{...field}
 											type="email"
+											value={field.value ?? ''}
 											className={cn('bg-[#1F1F1F] border-1 text-white', errors.email ? 'border-red-400' : 'border-[#2A2A2A]')}
 										/>
 									)}
@@ -153,6 +189,7 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 											<Input
 												{...field}
 												type={showPassword ? 'text' : 'password'}
+												value={field.value ?? ''}
 												className={cn(
 													'bg-[#1F1F1F] border-1 text-white',
 													errors.senha ? 'border-red-400' : 'border-[#2A2A2A]'

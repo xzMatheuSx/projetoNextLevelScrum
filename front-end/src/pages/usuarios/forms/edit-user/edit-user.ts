@@ -5,6 +5,10 @@ export async function editUser(id: string, data: unknown) {
 		const response = await axios.patch(`http://localhost:3000/usuarios/${id}`, data);
 		return response.data;
 	} catch (error) {
-		throw new Error('Erro ao atualizar usuário');
+		if (axios.isAxiosError(error)) {
+			throw new Error(`Erro ao atualizar usuário: ${error.response?.data?.message || error.message}`);
+		} else {
+			throw new Error('Erro ao atualizar usuário');
+		}
 	}
 }

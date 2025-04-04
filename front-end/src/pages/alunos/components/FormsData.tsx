@@ -11,6 +11,7 @@ import {
 	getPaginationRowModel,
 	getSortedRowModel,
 	useReactTable,
+	Table as ReactTable,
 } from '@tanstack/react-table';
 import { ArrowLeft, ArrowRight, PencilLine } from 'lucide-react';
 
@@ -34,12 +35,12 @@ export default function DataTableDemo() {
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 	const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-	const [rowSelection, setRowSelection] = React.useState({});
+	const [rowSelection, setRowSelection] = React.useState<ReactTable.SelectionState>({});
 
 	const fetchAlunos = React.useCallback(async () => {
 		setIsLoading(true);
 		try {
-			const response = await axios.get('http://localhost:3000/alunos');
+			const response = await axios.get<Aluno[]>('http://localhost:3000/alunos');
 			setAlunos(response.data);
 		} catch (error) {
 			console.error('Erro ao buscar os alunos:', error);
@@ -107,7 +108,7 @@ export default function DataTableDemo() {
 		},
 	];
 
-	const table = useReactTable({
+	const table = useReactTable<Aluno>({
 		data: alunos,
 		columns,
 		onSortingChange: setSorting,

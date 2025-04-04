@@ -10,6 +10,8 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { createUsuario } from './create-user';
+import { Eye, EyeOff } from 'lucide-react';
+import axios from 'axios';
 
 const schema = z.object({
 	nome: z.string().nonempty('Nome é obrigatório'),
@@ -38,6 +40,7 @@ export default function FormsUsuario({ onSave }: FormsUsuarioProps) {
 	});
 
 	const [isDialogOpen, setDialogOpen] = React.useState(false);
+	const [showPassword, setShowPassword] = React.useState(false);
 
 	const openDialog = () => {
 		setDialogOpen(true);
@@ -54,8 +57,12 @@ export default function FormsUsuario({ onSave }: FormsUsuarioProps) {
 			toast.success('Usuário criado com sucesso!');
 			onSave();
 			closeDialog();
-		} catch (error: any) {
-			toast.error(`Erro ao criar usuário: ${error.message}`);
+		} catch (error: unknown) {
+			if (axios.isAxiosError(error)) {
+				toast.error(`Erro ao criar usuário: ${error.response?.data?.message || error.message}`);
+			} else {
+				toast.error('Erro ao criar usuário');
+			}
 		}
 	};
 
@@ -128,7 +135,7 @@ export default function FormsUsuario({ onSave }: FormsUsuarioProps) {
 									)}
 								/>
 							</div>
-							<div className="grid items-center gap-4">
+							<div className="grid items-center gap-4 relative">
 								<Label htmlFor="senha" className="text-right">
 									Senha
 								</Label>
@@ -136,11 +143,23 @@ export default function FormsUsuario({ onSave }: FormsUsuarioProps) {
 									name="senha"
 									control={control}
 									render={({ field }) => (
-										<Input
-											{...field}
-											type="password"
-											className={cn('bg-[#1F1F1F] border-1 text-white', errors.senha ? 'border-red-400' : 'border-[#2A2A2A]')}
-										/>
+										<div className="relative">
+											<Input
+												{...field}
+												type={showPassword ? 'text' : 'password'}
+												className={cn(
+													'bg-[#1F1F1F] border-1 text-white',
+													errors.senha ? 'border-red-400' : 'border-[#2A2A2A]'
+												)}
+											/>
+											<button
+												type="button"
+												className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
+												onClick={() => setShowPassword(!showPassword)}
+											>
+												{showPassword ? <EyeOff /> : <Eye />}
+											</button>
+										</div>
 									)}
 								/>
 							</div>

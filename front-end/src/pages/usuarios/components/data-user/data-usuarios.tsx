@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import FormsUsuarios from '../../forms/create-forms-user/formsUser';
 import FormsEditUser from '../../forms/edit-user/FormsEditUser';
+import FormsDeleteUser from '../delete-user/delete-user-form';
 
 export type Usuario = {
 	id: string;
@@ -50,6 +51,10 @@ export default function DataTableUsuarios() {
 	}, [fetchUsuarios]);
 
 	const handleSave = async () => {
+		await fetchUsuarios();
+	};
+
+	const handleDelete = async () => {
 		await fetchUsuarios();
 	};
 
@@ -103,7 +108,9 @@ export default function DataTableUsuarios() {
 							/>
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem className="bg-red-400/25 hover:bg-red-400">Excluir Usuário</DropdownMenuItem>
+						<DropdownMenuItem className="bg-red-400/25 hover:bg-red-400">
+							<FormsDeleteUser userId={row.original.id} onDelete={handleDelete} />
+						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 			),
