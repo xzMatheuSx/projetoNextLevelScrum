@@ -4,13 +4,13 @@ export class RetornaAlunoDTO {
     cpf: string;
     email:string;
     telefone:string;
-    diaVencimento: number;
+    diaVencimento: string;
     ativo: boolean;
 
     constructor(
         matricula: number, nome: string, 
         cpf: string, email:string,
-        telefone:string, diaVencimento: number,
+        telefone:string, diaVencimento: string,
         ativo: boolean
     ) {
         this.matricula = matricula;

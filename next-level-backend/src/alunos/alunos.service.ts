@@ -58,13 +58,17 @@ export class AlunosService {
                 )
             }
         }
-        const aluno = this.alunosRepository.create(createAlunoDto);
-
-        aluno.ativo = true 
-
-        const aux = await this.alunosRepository.save(aluno);
-
-        return 'O aluno foi cadastrado com sucesso!';
+        const aluno = this.alunosRepository.create({
+            ...createAlunoDto,
+            usuarioAlt: { id: createAlunoDto.usuarioAlt },
+            diaVencimento: String(createAlunoDto.diaVencimento), 
+          });
+          
+          aluno.ativo = true;
+          
+          const aux = await this.alunosRepository.save(aluno);
+          
+          return 'O aluno foi cadastrado com sucesso!';
     }
 
     async findAll(): Promise<ListaAlunoDTO[]> {

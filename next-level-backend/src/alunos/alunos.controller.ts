@@ -14,6 +14,7 @@ export class AlunosController {
     @ApiOperation({ summary: 'Criar aluno' })
   
   create(@Body() createAlunoDto: CreateAlunoDto) {
+    console.log(createAlunoDto)
     return this.alunosService.create(createAlunoDto);
   }
 

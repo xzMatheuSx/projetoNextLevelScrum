@@ -1,4 +1,4 @@
-/*import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Mensalidade } from './entities/mensalidade.entity';
@@ -21,20 +21,29 @@ export class MensalidadeService {
   ) {}
 
   async criarMensalidade(createMensalidadeDto: CreateMensalidadeDto) {
-    const aluno = await this.alunoRepository.findOneBy({ matricula });
-    const plano = await this.planoRepository.findOne({ where: { id: id } });
-  
-    if (!aluno || !plano) throw new NotFoundException('Aluno ou plano não encontrado');
-  
-    const nova = this.mensalidadeRepository.create({
-      aluno,
-      plano,
-      valor: plano.valor,
-      vencimento,
-      pago: false,
-    });
-  
-    return await this.mensalidadeRepository.save(nova);
+    try{
+      const id = createMensalidadeDto.id
+      const matricula = createMensalidadeDto.matricula
+      const aluno = await this.alunoRepository.findOneBy({ matricula: matricula });
+      const plano = await this.planoRepository.findOne({ where: { id: id } });
+      const vencimento = aluno?.diaVencimento
+      if (!aluno || !plano) throw new NotFoundException('Aluno ou plano não encontrado');
+    
+      const nova = this.mensalidadeRepository.create({
+        aluno,
+    plano,
+    valor: plano.valor,
+    vencimento,
+    pago: createMensalidadeDto.pago,
+    dataPagamento: createMensalidadeDto.dataPagamento
+      });
+    
+      const aux = await this.mensalidadeRepository.save(nova);
+      return (`Mensalidade do aluno ${aux.aluno.nome} paga com sucesso`) 
+    }catch(error){
+      throw new InternalServerErrorException(error.message);
+    }
+   
   }
 
   async listarTodas() {
@@ -43,7 +52,7 @@ export class MensalidadeService {
 
   
 
-  async gerarComprovante(id: number) {
+ /* async gerarComprovante(id: number) {
     const mensalidade = await this.mensalidadeRepository.findOne({
       where: { id },
       relations: ['aluno', 'plano'],
@@ -59,5 +68,5 @@ export class MensalidadeService {
       pago: mensalidade.pago,
       dataPagamento: mensalidade.dataPagamento ?? 'Ainda não pago',
     };
-  }
-}*/
+  }*/
+}

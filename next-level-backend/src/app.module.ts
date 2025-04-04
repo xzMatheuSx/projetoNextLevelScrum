@@ -32,6 +32,8 @@ import { Venda } from './venda/entities/venda.entity';
 import { VendaProduto } from './venda-produto/entities/venda-produto.entity';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { Mensalidade } from './mensalidade/entities/mensalidade.entity';
+import { MensalidadeModule } from './mensalidade/mensalidade.module';
 
 
 @Module({
@@ -47,7 +49,7 @@ import { ConfigModule } from '@nestjs/config';
       entities: [
         Usuario, Plano, Aluno, PlanoAluno,
         PagamentoAluno, ProdutoTipo, Produto,
-        AlunoPresenca, EquipamentoTipo, Equipamento,
+        AlunoPresenca, EquipamentoTipo, Equipamento,Mensalidade,
         EquipamentosManutencao, MovimentoEstoque,
         Venda, VendaProduto
       ],
@@ -56,7 +58,7 @@ import { ConfigModule } from '@nestjs/config';
     AlunosModule, UsuariosModule, ProdutoModule, EquipamentosModule, EquipamentoTipoModule, 
     EquipamentosManutencaoModule, AlunoPresencaModule,
     PagamentoAlunoModule, PlanoAlunoModule, PlanoModule, 
-    ProdutoTipoModule, ProdutoModule, MovimentoEstoqueModule, 
+    ProdutoTipoModule, ProdutoModule, MovimentoEstoqueModule, MensalidadeModule,
     VendaModule, VendaProdutoModule, AuthModule,
     ConfigModule.forRoot({
         isGlobal: true, 

@@ -1,12 +1,12 @@
 export class ListaAlunoDTO {
     matricula: number;
     nome: string;
-    diaVencimento: number;
+    diaVencimento: string;
     ativo: boolean;
 
     constructor(
         matricula: number, nome: string, 
-        diaVencimento: number, ativo: boolean
+        diaVencimento: string, ativo: boolean
     ) {
         this.matricula = matricula;
         this.nome = nome;

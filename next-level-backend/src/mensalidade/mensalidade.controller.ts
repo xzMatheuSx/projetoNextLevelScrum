@@ -1,4 +1,4 @@
-/*import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { MensalidadeService } from './mensalidade.service';
 import { CreateMensalidadeDto } from './dto/create-mensalidade.dto';
 import { UpdateMensalidadeDto } from './dto/update-mensalidade.dto';
@@ -12,9 +12,8 @@ export class MensalidadeController {
     return this.mensalidadeService.criarMensalidade(createMensalidadeDto);
   }
 
-  @Get()
+  /*@Get()
   findAll() {
     return this.mensalidadeService.findAll();
-  }
+  }*/
 }
-*/

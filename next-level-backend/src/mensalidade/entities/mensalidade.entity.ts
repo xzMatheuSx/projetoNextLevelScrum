@@ -1,4 +1,4 @@
-/*import { Aluno } from "src/alunos/entities/aluno.entity";
+import { Aluno } from "src/alunos/entities/aluno.entity";
 import { Plano } from "src/plano/entities/plano.entity";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
@@ -10,13 +10,13 @@ export class Mensalidade {
   @ManyToOne(() => Aluno, aluno => aluno.mensalidades)
   aluno: Aluno;
 
-  @Column({ type: 'date' })
-  vencimento: Date;
+  @Column()
+  vencimento: string;
 
   @Column({ default: false })
   pago: boolean;
 
-  @Column({ type: 'date', nullable: true })
+  @Column({ type: 'date'})
   dataPagamento: Date;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
@@ -26,4 +26,3 @@ export class Mensalidade {
 plano: Plano;
 
 }
-*/
