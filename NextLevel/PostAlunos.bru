@@ -1,0 +1,22 @@
+meta {
+  name: PostAlunos
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:3000/alunos
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nome": "teste",
+    "cpf": "999.999.999-99",
+    "email": "teste@gmail.com",
+    "telefone": "(42) 99982-5482",
+    "diaVencimento": 13012002,
+    "usuarioAltId": "1"
+  }
+}
