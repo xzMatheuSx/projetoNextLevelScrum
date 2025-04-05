@@ -1,10 +1,10 @@
-import DataTableUsuarios from './components/data-user/data-usuarios';
+import DataTableUsers from './components/data-user/data-users';
 
 function Alunos() {
 	return (
 		<>
 			<div>
-				<DataTableUsuarios />
+				<DataTableUsers />
 			</div>
 		</>
 	);

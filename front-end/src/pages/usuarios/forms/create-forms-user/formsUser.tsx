@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { createUsuario } from './create-user';
+import { CreateUser } from './create-user';
 import { Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
 
@@ -53,7 +53,7 @@ export default function FormsUsuario({ onSave }: FormsUsuarioProps) {
 
 	const onSubmit = async (data: FormData) => {
 		try {
-			await createUsuario(data);
+			await CreateUser(data);
 			toast.success('Usuário criado com sucesso!');
 			onSave();
 			closeDialog();

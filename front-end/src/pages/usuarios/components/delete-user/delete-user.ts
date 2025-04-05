@@ -1,15 +1,11 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
-export async function deleteUser(userId: string) {
+export const DeleteUser = async (userId: string): Promise<void> => {
 	try {
-		const response = await axios.delete(`http://localhost:3000/usuarios/${userId}`);
-		return response.data;
-	} catch (error: unknown) {
-		if (axios.isAxiosError(error)) {
-			const errorMessage = error.response?.data?.message || error.message;
-			throw new Error(`Erro ao deletar usuário: ${errorMessage}`);
-		} else {
-			throw new Error('Erro ao deletar usuário');
-		}
+		await axios.delete(`http://localhost:3000/usuarios/${userId}`);
+	} catch (err) {
+		const error = err as AxiosError<{ message?: string }>;
+		const errorMessage = error.response?.data?.message ?? 'Erro ao deletar usuário.';
+		throw new Error(errorMessage);
 	}
-}
+};

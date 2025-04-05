@@ -1,5 +1,4 @@
 import * as React from 'react';
-import axios from 'axios';
 import {
 	ColumnDef,
 	ColumnFiltersState,
@@ -11,25 +10,18 @@ import {
 	getPaginationRowModel,
 	getSortedRowModel,
 	useReactTable,
-	Table as ReactTable,
 } from '@tanstack/react-table';
 import { ArrowLeft, ArrowRight, PencilLine } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import FormsCadastro from './FormsCadastro';
+import FormsRegister from '../../forms/forms-create-studant/forms-create-studant';
+import { getAlunos, Aluno } from './get-studant';
+import { toast } from 'sonner';
 
-export type Aluno = {
-	matricula: number;
-	nome: string;
-	diaVencimento: number;
-	ativo: boolean;
-};
-
-export default function DataTableDemo() {
+export default function DataTableAlunos() {
 	const [alunos, setAlunos] = React.useState<Aluno[]>([]);
 	const [isLoading, setIsLoading] = React.useState<boolean>(true);
 	const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -40,10 +32,12 @@ export default function DataTableDemo() {
 	const fetchAlunos = React.useCallback(async () => {
 		setIsLoading(true);
 		try {
-			const response = await axios.get<Aluno[]>('http://localhost:3000/alunos');
-			setAlunos(response.data);
-		} catch (error) {
-			console.error('Erro ao buscar os alunos:', error);
+			const data = await getAlunos();
+			setAlunos(data);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				toast.error(error.message);
+			}
 		} finally {
 			setIsLoading(false);
 		}
@@ -141,7 +135,7 @@ export default function DataTableDemo() {
 					className="max-w-xl"
 				/>
 				<div>
-					<FormsCadastro onSave={fetchAlunos} />
+					<FormsRegister onSave={fetchAlunos} />
 				</div>
 			</div>
 			<div className="rounded-md border">
