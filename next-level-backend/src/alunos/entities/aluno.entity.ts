@@ -24,13 +24,13 @@ export class Aluno {
     @Column()
     telefone:string
 
-    @Column()
+    @Column({ default: true })
     diaVencimento: string
 
     
     @ManyToOne(() => Usuario, { eager: true }) 
-@JoinColumn({ name: "usuarioAlt" }) 
-usuarioAlt: Usuario;
+    @JoinColumn({ name: "usuarioAlt" }) 
+    usuarioAlt: Usuario;
 
     
   @Column({ default: true })

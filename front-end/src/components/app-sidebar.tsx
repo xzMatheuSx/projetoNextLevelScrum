@@ -36,6 +36,10 @@ const data = {
 					title: 'Financeiro',
 					url: '#',
 				},
+				{
+					title: 'Planos',
+					url: '/planos',
+				},,
 			],
 		},
 		{

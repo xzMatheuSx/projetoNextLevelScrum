@@ -4,6 +4,7 @@ import LoginPage from '../pages/login';
 import Alunos from '../pages/alunos';
 import Usuarios from '../pages/usuarios';
 import Layout from '../layout';
+import Planos from '@/pages/planos';
 
 export default function AppRoutes() {
 	return (
@@ -13,6 +14,7 @@ export default function AppRoutes() {
 				<Route element={<Layout />}>
 					<Route path="/alunos" element={<Alunos />} />
 					<Route path="/usuarios" element={<Usuarios />} />
+					<Route path="/planos" element={<Planos />} />
 				</Route>
 			</Routes>
 		</BrowserRouter>
