@@ -9,6 +9,7 @@ export class MensalidadeController {
 
   @Post()
   create(@Body() createMensalidadeDto: CreateMensalidadeDto) {
+    console.log(createMensalidadeDto)
     return this.mensalidadeService.criarMensalidade(createMensalidadeDto);
   }
 

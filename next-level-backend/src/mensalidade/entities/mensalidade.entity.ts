@@ -1,6 +1,7 @@
 import { Aluno } from "src/alunos/entities/aluno.entity";
 import { Plano } from "src/plano/entities/plano.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { ComprovantePagamento } from "./comprovante.entity";
 
 @Entity('mensalidades')
 export class Mensalidade {
@@ -16,13 +17,16 @@ export class Mensalidade {
   @Column({ default: false })
   pago: boolean;
 
-  @Column({ type: 'date'})
-  dataPagamento: Date;
+  @Column()
+  dataPagamento: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   valor: number;
 
   @ManyToOne(() => Plano, plano => plano.valor)
 plano: Plano;
+
+@OneToMany(() => ComprovantePagamento, (comprovante) => comprovante.mensalidade)
+comprovantes: ComprovantePagamento[];
 
 }

@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Mensalidade } from './entities/mensalidade.entity';
 import { Plano } from '../plano/entities/plano.entity';
 import { Aluno } from 'src/alunos/entities/aluno.entity';
+import { ComprovantePagamento } from './entities/comprovante.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Mensalidade, Aluno, Plano])],
+  imports: [TypeOrmModule.forFeature([Mensalidade, Aluno, Plano,ComprovantePagamento])],
   controllers: [MensalidadeController],
   providers: [MensalidadeService],
 })

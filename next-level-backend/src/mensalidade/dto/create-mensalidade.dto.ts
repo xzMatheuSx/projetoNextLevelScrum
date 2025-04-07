@@ -1,4 +1,4 @@
-import { IsBoolean, IsNotEmpty, IsNumber } from "class-validator";
+import { IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class CreateMensalidadeDto {
 
@@ -15,6 +15,10 @@ export class CreateMensalidadeDto {
     pago: boolean
 
     @IsNotEmpty()
-    @IsNumber()
-    dataPagamento: Date
+    @IsString()
+    dataPagamento: string;
+
+    @IsNotEmpty()
+    @IsString()
+    vencimento: string
 }
