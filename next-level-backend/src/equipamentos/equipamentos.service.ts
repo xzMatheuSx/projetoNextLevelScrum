@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Equipamento } from './entities/equipamento.entity';
 import { CreateEquipamentoDto } from './dto/create-equipamento.dto';
 import { UpdateEquipamentoDto } from './dto/update-equipamento.dto';
+import { Usuario } from 'src/usuarios/entities/usuario.entity';
 
 @Injectable()
 export class EquipamentosService {
@@ -14,7 +15,24 @@ export class EquipamentosService {
 
   async create(createEquipamentoDto: CreateEquipamentoDto) {
     const equipamento = this.equipamentoRepository.create(createEquipamentoDto);
-    return await this.equipamentoRepository.save(equipamento);
+    const savedEquipamento = await this.equipamentoRepository.save(equipamento);
+  
+
+    const equipamentoComRelations = await this.equipamentoRepository.findOne({
+      where: { id: savedEquipamento.id },
+      relations: ['equipamentoTipo', 'usuarioAlt'],
+    });
+  
+    return {
+      retorno: {
+        id: equipamentoComRelations?.id,
+        tipo: equipamentoComRelations?.equipamentoTipo?.descricao ,
+        user: equipamentoComRelations?.usuarioAlt?.nome,
+        dataManutencao: equipamentoComRelations?.dataManutencao,
+        dataCompra: equipamentoComRelations?.dataCompra,
+        status: equipamentoComRelations?.status,
+      },
+    };
   }
 
   async findAll(): Promise<Equipamento[]> {

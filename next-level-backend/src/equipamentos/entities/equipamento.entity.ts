@@ -1,23 +1,30 @@
 import { IsNotEmpty } from 'class-validator';
 import { EquipamentoTipo } from 'src/equipamento-tipo/entities/equipamento-tipo.entity';
 import { Usuario } from 'src/usuarios/entities/usuario.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity()
+@Entity('equipamentos')
 export class Equipamento {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ type: "varchar" })
-    @IsNotEmpty()
-    descricao: string;
+  @Column()
+  nome: string;
 
-    @ManyToOne(() => EquipamentoTipo, { eager: true })
-    @IsNotEmpty()
-    equipamentoTipo: EquipamentoTipo;
-    
-    @ManyToOne(() => Usuario, { eager: true })
-    @IsNotEmpty()
-    usuarioAlt: Usuario;
+  @Column()
+  @IsNotEmpty()  dataCompra: string;
+
+  @Column()
+  dataManutencao: string;
+
+  @Column()
+  status: string; 
+
+  @ManyToOne(() => EquipamentoTipo, { eager: true })
+  @JoinColumn()
+  equipamentoTipo: EquipamentoTipo;
+  
+  @ManyToOne(() => Usuario, { eager: true })
+  usuarioAlt: Usuario;
 }
