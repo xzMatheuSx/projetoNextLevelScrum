@@ -104,4 +104,54 @@ export class MensalidadeService {
     }));
   }
 
+  construirDataVencimento(vencimento: string): Date {
+    const dia = parseInt(vencimento, 10);
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = hoje.getMonth();
+  
+    return new Date(ano, mes, dia);
+  }
+  
+
+  async listarVencidas() {
+    const hoje = new Date();
+  
+    const mensalidades = await this.mensalidadeRepository.find({
+      where: { pago: false },
+      relations: ['aluno', 'plano'],
+    });
+  
+    return mensalidades
+      .filter((m) => this.construirDataVencimento(m.vencimento) < hoje)
+      .map((m) => ({
+        aluno: m.aluno.nome,
+        plano: m.plano.descricao,
+        valor: m.valor,
+        vencimento: m.vencimento,
+        pago: m.pago,
+      }));
+  }
+  
+
+  async listarAVencer() {
+    const hoje = new Date();
+  
+    const mensalidades = await this.mensalidadeRepository.find({
+      where: { pago: false },
+      relations: ['aluno', 'plano'],
+    });
+  
+    return mensalidades
+      .filter((m) => this.construirDataVencimento(m.vencimento) >= hoje)
+      .map((m) => ({
+        aluno: m.aluno.nome,
+        plano: m.plano.descricao,
+        valor: m.valor,
+        vencimento: m.vencimento,
+        pago: m.pago,
+      }));
+  }
+  
+
 }

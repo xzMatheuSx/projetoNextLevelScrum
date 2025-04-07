@@ -22,4 +22,14 @@ export class MensalidadeController {
 listarPorAluno(@Param('matricula') matricula: number) {
   return this.mensalidadeService.listarPorAluno(matricula);
 }
+
+@Get('vencidas')
+async listarVencidas() {
+  return this.mensalidadeService.listarVencidas();
+}
+
+@Get('a-vencer')
+async listarAVencer() {
+  return this.mensalidadeService.listarAVencer();
+}
 }
