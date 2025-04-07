@@ -35,9 +35,23 @@ export class EquipamentosService {
     };
   }
 
-  async findAll(): Promise<Equipamento[]> {
-    return await this.equipamentoRepository.find();
+  async findAll() {
+    const equipamentos = await this.equipamentoRepository.find({
+      relations: ['equipamentoTipo', 'usuarioAlt'],
+    });
+  
+    return {
+      retorno: equipamentos.map(equip => ({
+        id: equip.id,
+        tipo: equip.equipamentoTipo?.descricao || null,
+        user: equip.usuarioAlt?.nome || null,
+        dataManutencao: equip.dataManutencao,
+        dataCompra: equip.dataCompra,
+        status: equip.status,
+      })),
+    };
   }
+  
 
   async findOne(id: number): Promise<Equipamento> {
     const equipamento = await this.equipamentoRepository.findOne({ where: { id } });
