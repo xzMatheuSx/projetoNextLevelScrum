@@ -90,23 +90,23 @@ export class ProdutoTipoService {
         let unidades: RetornaUnidadeMedida[] = [] 
 
         unidades.push(
-            new RetornaUnidadeMedida(UnidadeMedida.GR, "GR")
+            new RetornaUnidadeMedida("GR", UnidadeMedida.GR)
         )
 
         unidades.push(
-            new RetornaUnidadeMedida(UnidadeMedida.KG, "KG")
+            new RetornaUnidadeMedida("KG", UnidadeMedida.KG)
         )
 
         unidades.push(
-            new RetornaUnidadeMedida(UnidadeMedida.LT, "LT")
+            new RetornaUnidadeMedida("LT", UnidadeMedida.LT)
         )
 
         unidades.push(
-            new RetornaUnidadeMedida(UnidadeMedida.ML, "ML")
+            new RetornaUnidadeMedida("ML", UnidadeMedida.ML)
         )
 
         unidades.push(
-            new RetornaUnidadeMedida(UnidadeMedida.UN, "UN")
+            new RetornaUnidadeMedida("UN", UnidadeMedida.UN)
         )
 
         return unidades
