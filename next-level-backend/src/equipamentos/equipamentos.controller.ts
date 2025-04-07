@@ -20,11 +20,12 @@ export class EquipamentosController {
     return this.equipamentosService.findAll();
   }
 
+
   @Get(':id')
-  @ApiOperation({ summary: 'Retorna equipamento por' })
-  findOne(@Param('id') id: string) {
-    return this.equipamentosService.findOne(+id);
-  }
+@ApiOperation({ summary: 'Retorna equipamento por ID' })
+async findOne(@Param('id') id: number){
+  return this.equipamentosService.findOneBy(id); 
+}
 
   @Patch(':id')
   @ApiOperation({ summary: 'Editar equipamento' })

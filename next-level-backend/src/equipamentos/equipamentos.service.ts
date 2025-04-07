@@ -51,14 +51,28 @@ export class EquipamentosService {
       })),
     };
   }
-  
 
-  async findOne(id: number): Promise<Equipamento> {
-    const equipamento = await this.equipamentoRepository.findOne({ where: { id } });
+
+  async findOneBy(id: number) {
+    const equipamento = await this.equipamentoRepository.findOne({
+      where: { id },
+      relations: ['equipamentoTipo', 'usuarioAlt'],
+    });
+  
     if (!equipamento) {
-      throw new NotFoundException(`Equipamento com ID ${id} não encontrado`);
+      throw new NotFoundException('Equipamento não encontrado');
     }
-    return equipamento;
+  
+    return {
+      retorno: {
+        id: equipamento.id,
+        tipo: equipamento.equipamentoTipo?.descricao || null,
+        user: equipamento.usuarioAlt?.nome || null,
+        dataManutencao: equipamento.dataManutencao,
+        dataCompra: equipamento.dataCompra,
+        status: equipamento.status,
+      },
+    };
   }
 
   async update(id: number, updateEquipamentoDto: UpdateEquipamentoDto) {
