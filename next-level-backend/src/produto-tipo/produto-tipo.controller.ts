@@ -6,7 +6,7 @@ import { ListProdutoTipoDto } from './dto/list-produto-tipo.dto';
 import { ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 
-@UseGuards(AuthGuard('jwt'))
+//@UseGuards(AuthGuard('jwt'))
 @Controller('produto-tipo')
 export class ProdutoTipoController {
   constructor(private readonly produtoTipoService: ProdutoTipoService) {}

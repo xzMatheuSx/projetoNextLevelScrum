@@ -21,6 +21,10 @@ const data = {
 					title: 'Vendas',
 					url: '#',
 				},
+				{
+					title: 'Tipo produtos',
+					url: '/tipo-produtos',
+				},,
 			],
 		},
 		{

@@ -33,7 +33,6 @@ export default function DataTablePlanos() {
     }, [fetchPlanos]);
     
     const handleSave = async () => {
-		console.log("AQUIIIIIIIIIII")
 		await fetchPlanos();
 	};
 
