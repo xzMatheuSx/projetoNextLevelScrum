@@ -88,4 +88,20 @@ export class MensalidadeService {
     return { mensalidades };
   }
 
+  async listarPorAluno(matricula: number) {
+    const mensalidades = await this.mensalidadeRepository.find({
+      where: { aluno: { matricula: matricula } },
+      relations: ['aluno', 'plano'],
+    });
+  
+    return mensalidades.map((mensalidade) => ({
+      aluno: mensalidade.aluno.nome,
+      plano: mensalidade.plano.descricao,
+      valorPago: mensalidade.valor,
+      dataPagamento: mensalidade.dataPagamento,
+      vencimento: mensalidade.vencimento,
+      pago: mensalidade.pago,
+    }));
+  }
+
 }

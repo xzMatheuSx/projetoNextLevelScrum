@@ -17,4 +17,9 @@ export class MensalidadeController {
   findAll() {
     return this.mensalidadeService.listarTodas();
   }
+
+  @Get('aluno/:matricula')
+listarPorAluno(@Param('matricula') matricula: number) {
+  return this.mensalidadeService.listarPorAluno(matricula);
+}
 }
