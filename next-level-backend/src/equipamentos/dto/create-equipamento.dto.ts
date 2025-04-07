@@ -10,8 +10,7 @@ export class CreateEquipamentoDto {
   @IsString()
   dataCompra: string;
 
-  @IsString()
-  dataManutencao?: string;
+
 
   @IsNotEmpty()
   @IsString()

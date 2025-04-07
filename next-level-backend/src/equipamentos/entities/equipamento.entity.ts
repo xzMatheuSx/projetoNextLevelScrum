@@ -15,8 +15,6 @@ export class Equipamento {
   @Column()
   @IsNotEmpty()  dataCompra: string;
 
-  @Column()
-  dataManutencao: string;
 
   @Column()
   status: string; 
