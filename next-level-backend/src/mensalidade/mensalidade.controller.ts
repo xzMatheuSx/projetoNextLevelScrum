@@ -13,8 +13,8 @@ export class MensalidadeController {
     return this.mensalidadeService.criarMensalidade(createMensalidadeDto);
   }
 
-  /*@Get()
+  @Get()
   findAll() {
-    return this.mensalidadeService.findAll();
-  }*/
+    return this.mensalidadeService.listarTodas();
+  }
 }

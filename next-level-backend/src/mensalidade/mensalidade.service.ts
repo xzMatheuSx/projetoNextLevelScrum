@@ -71,11 +71,21 @@ export class MensalidadeService {
     };
   }
   
-
   async listarTodas() {
-    return this.mensalidadeRepository.find({ relations: ['aluno', 'plano'] });
-  }
-
+    const aux = await this.mensalidadeRepository.find({ relations: ['aluno', 'plano'] });
   
+    const mensalidades = aux.map((mensalidade) => {
+      return {
+        aluno: mensalidade.aluno.nome,
+        plano: mensalidade.plano.descricao,
+        valorPago: mensalidade.valor,
+        dataPagamento: mensalidade.dataPagamento,
+        vencimento: mensalidade.vencimento,
+        pago: mensalidade.pago,
+      };
+    });
+  
+    return { mensalidades };
+  }
 
 }
