@@ -34,6 +34,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { Mensalidade } from './mensalidade/entities/mensalidade.entity';
 import { MensalidadeModule } from './mensalidade/mensalidade.module';
+import { ComprovantePagamento } from './mensalidade/entities/comprovante.entity';
 
 
 @Module({
@@ -51,7 +52,7 @@ import { MensalidadeModule } from './mensalidade/mensalidade.module';
         PagamentoAluno, ProdutoTipo, Produto,
         AlunoPresenca, EquipamentoTipo, Equipamento,Mensalidade,
         EquipamentosManutencao, MovimentoEstoque,
-        Venda, VendaProduto
+        Venda, VendaProduto,ComprovantePagamento
       ],
       synchronize: true,
     }),

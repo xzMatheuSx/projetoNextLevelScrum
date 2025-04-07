@@ -9,11 +9,27 @@ export class MensalidadeController {
 
   @Post()
   create(@Body() createMensalidadeDto: CreateMensalidadeDto) {
+    console.log(createMensalidadeDto)
     return this.mensalidadeService.criarMensalidade(createMensalidadeDto);
   }
 
-  /*@Get()
+  @Get()
   findAll() {
-    return this.mensalidadeService.findAll();
-  }*/
+    return this.mensalidadeService.listarTodas();
+  }
+
+  @Get('aluno/:matricula')
+listarPorAluno(@Param('matricula') matricula: number) {
+  return this.mensalidadeService.listarPorAluno(matricula);
+}
+
+@Get('vencidas')
+async listarVencidas() {
+  return this.mensalidadeService.listarVencidas();
+}
+
+@Get('a-vencer')
+async listarAVencer() {
+  return this.mensalidadeService.listarAVencer();
+}
 }
