@@ -1,8 +1,10 @@
+import DataMensalidade from "./components/data-mensalidades/data-mensalidades";
+
 function Mensalidades() {
     return (
         <>
             <div>
-                <DataTablePlanos />
+                <DataMensalidade />
             </div>
         </>
     );
