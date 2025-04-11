@@ -24,7 +24,7 @@ const data = {
 				{
 					title: 'Tipo produtos',
 					url: '/tipo-produtos',
-				},,
+				},
 			],
 		},
 		{
@@ -34,7 +34,7 @@ const data = {
 			items: [
 				{
 					title: 'Mensalidade',
-					url: '#',
+					url: '/mensalidade',
 				},
 				{
 					title: 'Financeiro',
@@ -43,7 +43,7 @@ const data = {
 				{
 					title: 'Planos',
 					url: '/planos',
-				},,
+				}
 			],
 		},
 		{

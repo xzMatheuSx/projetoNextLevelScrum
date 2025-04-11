@@ -11,8 +11,6 @@ export class CadastroMensalidades {
 
   @Cron('59 23 * * 0')
   handleCron() {
-    this.logger.debug('Executando tarefa a cada 10 segundos');
-
     this.mensalidadeService.gerarMensalidades()
   }
 }
