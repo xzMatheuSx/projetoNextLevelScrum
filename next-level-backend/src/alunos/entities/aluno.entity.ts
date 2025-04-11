@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, JoinColumn, 
 import { Usuario} from 'src/usuarios/entities/usuario.entity';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { Mensalidade } from 'src/mensalidade/entities/mensalidade.entity';
+import { Presenca } from 'src/aluno-presenca/entities/aluno-presenca.entity';
 @Entity()
 export class Aluno {
 
@@ -51,4 +52,5 @@ export class Aluno {
 
   @OneToMany(() => Mensalidade, mensalidade => mensalidade.aluno)
   mensalidades: Mensalidade[];
+
 }

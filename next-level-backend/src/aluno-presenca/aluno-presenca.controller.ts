@@ -3,18 +3,38 @@ import { AlunoPresencaService } from './aluno-presenca.service';
 import { CreateAlunoPresencaDto } from './dto/create-aluno-presenca.dto';
 import { UpdateAlunoPresencaDto } from './dto/update-aluno-presenca.dto';
 import { ApiOperation } from '@nestjs/swagger';
+import { SaidaDTO } from './dto/create-aluno-saida.dto';
 
 @Controller('aluno-presenca')
 export class AlunoPresencaController {
   constructor(private readonly alunoPresencaService: AlunoPresencaService) {}
 
-  @Post()
+  @Post("/entrada")
    @ApiOperation({ summary: 'Registra presença aluno' })
   create(@Body() createAlunoPresencaDto: CreateAlunoPresencaDto) {
-    return this.alunoPresencaService.create(createAlunoPresencaDto);
+    return this.alunoPresencaService.checkIn(createAlunoPresencaDto);
   }
 
+  @Post("/saida")
+  @ApiOperation({ summary: 'Registra presença aluno' })
+ createe(@Body() createAlunoSaidaDto: SaidaDTO) {
+   return this.alunoPresencaService.checkOut(createAlunoSaidaDto);
+ }
 
+ @Get()
+ @ApiOperation({ summary: 'Pesquisa todas presenças' })
+ findAll() {
+   return this.alunoPresencaService.findAll();
+ }
+
+ @Get('matricula/:matricula')
+ @ApiOperation({ summary: 'Pesquisa todas presenças de um aluno por matrícula' })
+ findByMatricula(@Param('matricula') matricula: number) {
+   return this.alunoPresencaService.findByMatricula({ alunoMatricula: matricula } as any);
+ }
+
+
+/*
   @Get()
   @ApiOperation({ summary: 'Pesquisa todas presenças' })
   findAll() {
@@ -54,4 +74,5 @@ export class AlunoPresencaController {
   remove(@Param('id') id: string) {
     return this.alunoPresencaService.remove(+id);
   }
+    */
 }

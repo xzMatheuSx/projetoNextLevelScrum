@@ -23,7 +23,7 @@ import { PlanoAluno } from './plano-aluno/entities/plano-aluno.entity';
 import { PagamentoAluno } from './pagamento-aluno/entities/pagamento-aluno.entity';
 import { ProdutoTipo } from './produto-tipo/entities/produto-tipo.entity';
 import { Produto } from './produto/entities/produto.entity';
-import { AlunoPresenca } from './aluno-presenca/entities/aluno-presenca.entity';
+import { Presenca } from './aluno-presenca/entities/aluno-presenca.entity';
 import { EquipamentoTipo } from './equipamento-tipo/entities/equipamento-tipo.entity';
 import { Equipamento } from './equipamentos/entities/equipamento.entity';
 import { EquipamentosManutencao } from './equipamentos-manutencao/entities/equipamentos-manutencao.entity';
@@ -51,7 +51,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       entities: [
         Usuario, Plano, Aluno, PlanoAluno,
         PagamentoAluno, ProdutoTipo, Produto,
-        AlunoPresenca, EquipamentoTipo, Equipamento,Mensalidade,
+        Presenca, EquipamentoTipo, Equipamento,Mensalidade,
         EquipamentosManutencao, MovimentoEstoque,
         Venda, VendaProduto,ComprovantePagamento
       ],

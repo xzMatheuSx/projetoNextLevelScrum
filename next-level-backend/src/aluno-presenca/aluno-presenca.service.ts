@@ -1,106 +1,305 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Like, Repository } from 'typeorm';
-import { AlunoPresenca } from './entities/aluno-presenca.entity';
-import { Aluno } from 'src/alunos/entities/aluno.entity'; 
+import { Between, IsNull, Like, Repository } from 'typeorm';
+import { Presenca } from './entities/aluno-presenca.entity';
+import { Aluno } from 'src/alunos/entities/aluno.entity';
 import { CreateAlunoPresencaDto } from './dto/create-aluno-presenca.dto';
 import { UpdateAlunoPresencaDto } from './dto/update-aluno-presenca.dto';
 import { RetonaAlunoPresencaDTO } from './dto/retorna-aluno-presenca.dto';
+import { SaidaDTO } from './dto/create-aluno-saida.dto';
 
 @Injectable()
 export class AlunoPresencaService {
   constructor(
-    @InjectRepository(AlunoPresenca)
-    private alunoPresencaRepository: Repository<AlunoPresenca>,
+    @InjectRepository(Presenca)
+    private presencaRepository: Repository<Presenca>,
+
     @InjectRepository(Aluno)
     private alunoRepository: Repository<Aluno>,
   ) {}
 
+
+  async checkIn(dto: CreateAlunoPresencaDto) {
+    const aluno = await this.alunoRepository.findOne({
+      where: { matricula: dto.alunoMatricula },
+    });
+  
+    if (!aluno) {
+      throw new NotFoundException('Aluno não encontrado');
+    }
+  
+    const aberta = await this.presencaRepository.findOne({
+      where: { aluno, saida: IsNull() },
+    });
+  
+    if (aberta) {
+      throw new BadRequestException('Já existe um check-in aberto.');
+    }
+  
+    const presenca = this.presencaRepository.create({
+      aluno,
+      entrada: new Date(),
+    });
+  
+    
+     const aux = this.presencaRepository.save(presenca);
+     return (`entrada registrada com sucesso ${(await aux).aluno.nome}`)
+  }
+
+
+  async checkOut(createAlunoSaidaDto: SaidaDTO) {
+    const { alunoMatricula } = createAlunoSaidaDto;
+  
+
+    const aluno = await this.alunoRepository.findOneBy({ matricula: alunoMatricula });
+  
+    if (!aluno) {
+      throw new NotFoundException('Aluno não encontrado.');
+    }
+  
+    const presenca = await this.presencaRepository.findOne({
+      where: { aluno, saida: IsNull() },
+    });
+  
+    if (!presenca) {
+      throw new NotFoundException('Nenhuma presença em aberto encontrada.');
+    }
+  
+
+    const saida = new Date();
+    const duracaoMs = saida.getTime() - presenca.entrada.getTime();
+    const duracaoMin = Math.floor(duracaoMs / 60000);
+  
+    presenca.saida = saida;
+    presenca.duracao = duracaoMin;
+  
+    const saved = await this.presencaRepository.save(presenca);
+
+return {
+  entrada: saved.entrada,
+  saida: saved.saida,
+  duracao: saved.duracao,
+};
+  }
+
+
+  async findByMatricula(createAlunoPresencaDto: CreateAlunoPresencaDto) {
+    const presencas = await this.presencaRepository.find({
+      where: {
+        aluno: {
+          matricula: createAlunoPresencaDto.alunoMatricula,
+        },
+      },
+      order: { entrada: 'DESC' },
+    });
+  
+    if (!presencas || presencas.length === 0) {
+      throw new NotFoundException('Nenhuma presença encontrada para o aluno informado.');
+    }
+  
+    return presencas.map((presenca) => ({
+      aluno: {
+        matricula: presenca.aluno.matricula,
+        nome: presenca.aluno.nome,
+      },
+      entrada: presenca.entrada,
+      saida: presenca.saida,
+      duracao: presenca.duracao,
+    }));
+  }
+
+  async findAll() {
+    const presencas = await this.presencaRepository.find({ relations: ['aluno'] });
+  
+    return presencas.map((presenca) => ({
+      aluno: {
+        matricula: presenca.aluno.matricula,
+        nome: presenca.aluno.nome,
+      },
+      entrada: presenca.entrada,
+      saida: presenca.saida,
+      duracao: presenca.duracao,
+    }));
+  }
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
   async create(createAlunoPresencaDto: CreateAlunoPresencaDto) {
     const aluno = await this.alunoRepository.findOne({
-      where: { matricula: createAlunoPresencaDto.alunoMatricula }, 
+      where: { matricula: createAlunoPresencaDto.alunoMatricula },
     });
 
     if (!aluno) {
-      throw new NotFoundException(`Aluno com matrícula ${createAlunoPresencaDto.alunoMatricula} não encontrado`);
+      throw new NotFoundException(
+        `Aluno com matrícula ${createAlunoPresencaDto.alunoMatricula} não encontrado`,
+      );
     }
 
-    if (aluno.ativo == false) {
-        throw new NotFoundException("O aluno informado não está ativo! Não será possível registrar a presença!")
+    if (!aluno.ativo) {
+      throw new NotFoundException(
+        'O aluno informado não está ativo! Não será possível registrar a presença!',
+      );
     }
 
-
-    const presenca = this.alunoPresencaRepository.create({
-      ...createAlunoPresencaDto,  
-      alunoMatricula: aluno, 
+    const presenca = this.PresencaRepository.create({
+      ...createAlunoPresencaDto,
+      aluno,
     });
 
-    let al = await this.alunoPresencaRepository.save(presenca);
+    const al = await this.PresencaRepository.save(presenca);
 
     return new RetonaAlunoPresencaDTO(
-        al.id, al.momento, al.alunoMatricula.matricula,
-        al.alunoMatricula.nome, al.usuarioAlt?.nome || ""
-    )
+      al.id,
+      al.entrada,
+      al.aluno.matricula,
+      al.aluno.nome,
+      '',
+    );
   }
 
   async findAll(): Promise<RetonaAlunoPresencaDTO[]> {
-    return (await this.alunoPresencaRepository.find()).map((al: AlunoPresenca) => 
-        new RetonaAlunoPresencaDTO(
-            al.id, al.momento, al.alunoMatricula.matricula,
-            al.alunoMatricula.nome, al.usuarioAlt?.nome || ""
-        )
-    )
+    const list = await this.PresencaRepository.find({
+      relations: ['aluno'],
+    });
+
+    return list.map((al: Presenca) => 
+      new RetonaAlunoPresencaDTO(
+        al.id,
+        al.entrada,
+        al.aluno.matricula,
+        al.aluno.nome,
+        '',
+      ),
+    );
   }
 
-  async pesquisarPresencaAluno(
-    dataIni: Date, dataFim: Date, nome: string
-  ){
-    console.log(dataFim, dataIni, nome)
-    let presenca = await this.alunoPresencaRepository
-    .createQueryBuilder('alunoPresenca')
-    .innerJoinAndSelect('alunoPresenca.alunoMatricula', 'aluno')
-    .where('LOWER(aluno.nome) LIKE LOWER(:aluno)', { aluno: `%${nome}%` }) 
-    .andWhere('DATE(alunoPresenca.momento) BETWEEN DATE(:startDate) AND DATE(:endDate)', { 
-      startDate: dataIni, 
-      endDate: dataFim 
-    }) 
-    .getMany()
+  async pesquisarPresencaAluno(dataIni: Date, dataFim: Date, nome: string) {
+    const presenca = await this.PresencaRepository
+      .createQueryBuilder('alunoPresenca')
+      .innerJoinAndSelect('alunoPresenca.aluno', 'aluno')
+      .where('LOWER(aluno.nome) LIKE LOWER(:nome)', { nome: `%${nome}%` })
+      .andWhere('DATE(alunoPresenca.entrada) BETWEEN DATE(:startDate) AND DATE(:endDate)', {
+        startDate: dataIni,
+        endDate: dataFim,
+      })
+      .getMany();
 
-    return presenca.map((al: AlunoPresenca) => 
-        new RetonaAlunoPresencaDTO(
-            al.id, al.momento, al.alunoMatricula.matricula,
-            al.alunoMatricula.nome, al.usuarioAlt?.nome || ""
-        )
-    )
+    return presenca.map((al: Presenca) =>
+      new RetonaAlunoPresencaDTO(
+        al.id,
+        al.entrada,
+        al.aluno.matricula,
+        al.aluno.nome,
+        '',
+      ),
+    );
   }
 
-  async findOne(id: number): Promise<AlunoPresenca> {
-    const presenca = await this.alunoPresencaRepository.findOne({ where: { id } });
+  async findOne(id: number): Promise<Presenca> {
+    const presenca = await this.PresencaRepository.findOne({
+      where: { id },
+      relations: ['aluno'],
+    });
+
     if (!presenca) {
       throw new NotFoundException(`Presença de aluno com ID ${id} não encontrada`);
     }
+
     return presenca;
   }
 
   async update(id: number, updateAlunoPresencaDto: UpdateAlunoPresencaDto) {
-    const presenca = await this.alunoPresencaRepository.findOne({ where: { id } });
+    const presenca = await this.PresencaRepository.findOne({
+      where: { id },
+      relations: ['aluno'],
+    });
+
     if (!presenca) {
       throw new NotFoundException(`Presença de aluno com ID ${id} não encontrada`);
     }
 
-      if (presenca.alunoMatricula.ativo == false) {
-          throw new NotFoundException("O aluno informado não está ativo! Não será possível registrar a presença!")
-      }
-  
+    if (!presenca.aluno.ativo) {
+      throw new NotFoundException('O aluno informado não está ativo! Não será possível atualizar a presença!');
+    }
+
     Object.assign(presenca, updateAlunoPresencaDto);
-    return await this.alunoPresencaRepository.save(presenca);
+    return this.PresencaRepository.save(presenca);
   }
 
   async remove(id: number) {
-    const result = await this.alunoPresencaRepository.delete(id);
+    const result = await this.PresencaRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`Presença de aluno com ID ${id} não encontrada`);
     }
+
     return `Presença de aluno com ID ${id} removida com sucesso`;
   }
 }
+*/

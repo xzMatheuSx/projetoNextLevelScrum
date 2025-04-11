@@ -4,19 +4,19 @@ import { IsNotEmpty } from "class-validator";
 import { Usuario } from "src/usuarios/entities/usuario.entity";
 
 @Entity()
-export class AlunoPresenca {
-    
-    @PrimaryGeneratedColumn()
-    id: number;
+export class Presenca {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({type: "timestamp"})
-    momento: Date;
-    
-    @ManyToOne(() => Aluno, { eager: true })
-    @IsNotEmpty()
-    alunoMatricula: Aluno;
+  @ManyToOne(() => Aluno, { eager: true })
+  aluno: Aluno;
 
-    @ManyToOne(() => Usuario, { eager: true })
-    @IsNotEmpty()
-    usuarioAlt: Usuario;
+  @Column({ type: 'timestamp', nullable: false })
+  entrada: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  saida: Date;
+
+  @Column({ type: 'int', nullable: true }) 
+  duracao: number;
 }
