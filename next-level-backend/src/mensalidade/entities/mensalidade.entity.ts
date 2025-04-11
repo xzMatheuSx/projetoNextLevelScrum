@@ -17,7 +17,7 @@ export class Mensalidade {
   @Column({ default: false })
   pago: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   dataPagamento: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })

@@ -21,7 +21,7 @@ export class PlanoAluno {
     @Column()
     dataInicio: Date;
 
-    @Column()
+    @Column({ nullable: true })
     dataFinal: Date;
 
     @ManyToOne(() => Usuario, (usuario) => usuario.id)

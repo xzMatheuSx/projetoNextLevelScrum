@@ -35,6 +35,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Mensalidade } from './mensalidade/entities/mensalidade.entity';
 import { MensalidadeModule } from './mensalidade/mensalidade.module';
 import { ComprovantePagamento } from './mensalidade/entities/comprovante.entity';
+import { ScheduleModule } from '@nestjs/schedule';
 
 
 @Module({
@@ -64,6 +65,7 @@ import { ComprovantePagamento } from './mensalidade/entities/comprovante.entity'
     ConfigModule.forRoot({
         isGlobal: true, 
       }),
+      ScheduleModule.forRoot()
   ],
   controllers: [AppController],
   providers: [AppService],

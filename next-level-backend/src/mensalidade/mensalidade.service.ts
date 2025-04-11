@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Mensalidade } from './entities/mensalidade.entity';
 import { Aluno } from 'src/alunos/entities/aluno.entity';
 import { Plano } from 'src/plano/entities/plano.entity';
@@ -20,7 +20,9 @@ export class MensalidadeService {
     @InjectRepository(Plano)
     private readonly planoRepository: Repository<Plano>,
     @InjectRepository(ComprovantePagamento)
-    private readonly comprovanteRepository: Repository<ComprovantePagamento>
+    private readonly comprovanteRepository: Repository<ComprovantePagamento>,
+
+    private dataSource: DataSource
   ) {}
 
   async criarMensalidade(createMensalidadeDto: CreateMensalidadeDto) {
@@ -154,4 +156,50 @@ export class MensalidadeService {
   }
   
 
+  async gerarMensalidades(): Promise<void> {
+    const query = `
+      insert into mensalidades (vencimento, pago, valor, "alunoMatricula", "planoId")
+      select  
+        case when 
+          date(a."diaVencimento" || '/' || extract(month from current_date) || '/' || extract(year from current_date)) < current_date 
+        then 
+          date(a."diaVencimento" || '/' || extract(month from current_date + 7) || '/' || extract(year from current_date)) 
+        else 
+          date(a."diaVencimento" || '/' || extract(month from current_date) || '/' || extract(year from current_date)) 
+        end,
+        false, 
+        (
+          case 
+            when extract(day from current_date - pl."dataInicio") < 28 
+            then p.valor / extract(day from current_date - pl."dataInicio")
+            else p.valor 
+          end
+        )::numeric(15,2),
+        a.matricula, 
+        p.id
+      from aluno a 
+      join plano_aluno pl on (pl."alunoMatricula" = a.matricula) 
+      join plano p on (p.id = pl."planoId")
+      where pl."dataFinal" is null
+        and a.ativo 
+        and not exists(
+          select 1 
+          from mensalidades m 
+          where m."alunoMatricula" = pl."alunoMatricula" 
+          and date(vencimento) between current_date and current_date + 7
+        )
+        and (
+          case when 
+            date(a."diaVencimento" || '/' || extract(month from current_date) || '/' || extract(year from current_date)) < current_date 
+          then 
+            date(a."diaVencimento" || '/' || extract(month from current_date + 7) || '/' || extract(year from current_date)) 
+          else 
+            date(a."diaVencimento" || '/' || extract(month from current_date) || '/' || extract(year from current_date))
+          end 
+          between current_date and current_date + 7
+        );
+    `;
+
+    await this.dataSource.query(query);
+  }
 }
