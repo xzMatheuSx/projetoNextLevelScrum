@@ -76,6 +76,7 @@ export class MensalidadeService {
   async listarTodas() {
     const aux = await this.mensalidadeRepository.find({ relations: ['aluno', 'plano'] });
   
+    console.log(aux)
     const mensalidades = aux.map((mensalidade) => {
       return {
         aluno: mensalidade.aluno.nome,
@@ -106,13 +107,11 @@ export class MensalidadeService {
     }));
   }
 
-  construirDataVencimento(vencimento: string): Date {
-    const dia = parseInt(vencimento, 10);
-    const hoje = new Date();
-    const ano = hoje.getFullYear();
-    const mes = hoje.getMonth();
-  
-    return new Date(ano, mes, dia);
+  construirDataVencimento(data: string | Date): Date {
+    if (typeof data === 'string') {
+      return new Date(data + 'T00:00:00');
+    }
+    return data;
   }
   
 
@@ -125,7 +124,10 @@ export class MensalidadeService {
     });
   
     return mensalidades
-      .filter((m) => this.construirDataVencimento(m.vencimento) < hoje)
+    .filter((m) => {
+        const vencimento = this.construirDataVencimento(m.vencimento);
+        return vencimento instanceof Date && !isNaN(vencimento.getTime()) && vencimento < hoje;
+      })      
       .map((m) => ({
         aluno: m.aluno.nome,
         plano: m.plano.descricao,
@@ -145,7 +147,10 @@ export class MensalidadeService {
     });
   
     return mensalidades
-      .filter((m) => this.construirDataVencimento(m.vencimento) >= hoje)
+    .filter((m) => {
+        const vencimento = this.construirDataVencimento(m.vencimento);
+        return vencimento instanceof Date && !isNaN(vencimento.getTime()) && vencimento >= hoje;
+      })
       .map((m) => ({
         aluno: m.aluno.nome,
         plano: m.plano.descricao,
@@ -154,7 +159,7 @@ export class MensalidadeService {
         pago: m.pago,
       }));
   }
-  
+
 
   async gerarMensalidades(): Promise<void> {
     const query = `

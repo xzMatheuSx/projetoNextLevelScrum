@@ -10,8 +10,7 @@ export type MensalidadeList = {
 
 export async function getMensalidades(status: string) {
 	try {
-    const response = (status == "vencidas") ? await axios.get('http://localhost:3000/mensalidade/vencidas') :
-    await axios.get('http://localhost:3000/mensalidade/a-vencer') 
+    const response = await axios.get('http://localhost:3000/mensalidade/vencidas')
     
 		return response.data;
 

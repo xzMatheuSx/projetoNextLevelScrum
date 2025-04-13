@@ -13,7 +13,7 @@ export class MensalidadeController {
     return this.mensalidadeService.criarMensalidade(createMensalidadeDto);
   }
 
-  @Get()
+  @Get("todos")
   findAll() {
     return this.mensalidadeService.listarTodas();
   }
@@ -32,4 +32,5 @@ async listarVencidas() {
 async listarAVencer() {
   return this.mensalidadeService.listarAVencer();
 }
+
 }

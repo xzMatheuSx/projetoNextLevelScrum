@@ -7,6 +7,14 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState } from "@tanstack/react-table";
 import { Checkbox } from '@/components/ui/checkbox';
 import { getMensalidades, MensalidadeList } from "./get-mensalidades";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select"
+  import { Search, Loader2 } from "lucide-react"
 
 export default function DataMensalidade() {
 
@@ -16,17 +24,50 @@ export default function DataMensalidade() {
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
-
+    const [vencimentoFiltro, setVencimentoFiltro] = React.useState<string>();
+    const [loading, setLoading] = React.useState(false);
 
     const fetchMensalidades = React.useCallback(async () => {
         try {
-            const data = await getMensalidades("a-vencer")
+            pesquisarMensalidade("em-aberto")
 
-            setMensalidadeList(data);
         } catch (error) {
             console.error('Erro ao buscar as mensalidades:', error);
         }
     }, []);
+
+    async function pesquisarMensalidade(tipo: string) {
+        setLoading(true); 
+        try {
+            if (tipo == "em-aberto") {
+                let data = await getMensalidades("a-vencer");
+                let dataAux = await getMensalidades("vencidas");
+
+                const combinado = [...data, ...dataAux];
+
+                setMensalidadeList(combinado);  
+            } else{
+               
+                const data = await getMensalidades(tipo);
+
+
+                setMensalidadeList(data);
+
+                console.log(data);
+                console.log(tipo);
+            }
+        
+        } catch (error) {
+            console.error('Erro ao buscar as mensalidades:', error);
+        } finally {
+            setLoading(false); 
+        }
+    }
+
+    function formatarData(data: string): string {
+        const [ano, mes, dia] = data.split('-');
+        return `${dia}/${mes}/${ano}`;
+      }
 
     React.useEffect(() => {
         fetchMensalidades();
@@ -68,7 +109,11 @@ export default function DataMensalidade() {
         {
             accessorKey: 'vencimento',
             header: () => <div className="font-bold">Vencimento</div>,
-            cell: ({ row }) => <div className="font-light">{row.getValue('vencimento')}</div>,
+            cell: ({ row }) => {
+              const dataOriginal = row.getValue('vencimento') as string;
+              const dataFormatada = formatarData(dataOriginal);
+              return <div className="font-light">{dataFormatada}</div>;
+            },
         },
         {
             accessorKey: 'pago',
@@ -121,16 +166,44 @@ export default function DataMensalidade() {
 
     return (
         <div className="w-full">
-            <h1>Planos</h1>
+            <h1>Mensalidades</h1>
             <div className="flex items-center py-4 justify-between gap-10">
+            <div className="flex items-center gap-4 w-full">
                 <Input
-                    placeholder="Pesquisar planos..."
-                    value={(table.getColumn('descricao')?.getFilterValue() as string) ?? ''}
-                    onChange={(event) => table.getColumn('descricao')?.setFilterValue(event.target.value)}
-                    className="max-w-xl"
+                placeholder="Pesquisar aluno..."
+                value={(table.getColumn('aluno')?.getFilterValue() as string) ?? ''}
+                onChange={(event) => table.getColumn('aluno')?.setFilterValue(event.target.value)}
+                className="max-w-xl"
                 />
-                <div>
-                </div>
+
+                <Select
+                value={vencimentoFiltro}
+                onValueChange={(value) => setVencimentoFiltro(value)}
+                >
+                <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Filtrar por vencimento" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="a-vencer">À vencer</SelectItem>
+                    <SelectItem value="vencidas">Vencidas</SelectItem>
+                    <SelectItem value="em-aberto">Em aberto</SelectItem>
+                    <SelectItem value="todos">Todas</SelectItem>
+                </SelectContent>
+                </Select>
+
+                <Button
+                onClick={() => pesquisarMensalidade(vencimentoFiltro!)}
+                className="flex items-center gap-2"
+                disabled={loading}
+                >
+                {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                    <Search className="w-4 h-4" />
+                )}
+                {loading ? "Carregando..." : "Pesquisar"}
+                </Button>
+            </div>
             </div>
             <div className="rounded-md border">
                 <Table>
