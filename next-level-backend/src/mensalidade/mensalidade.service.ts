@@ -27,32 +27,27 @@ export class MensalidadeService {
 
   async criarMensalidade(createMensalidadeDto: CreateMensalidadeDto) {
     const id = createMensalidadeDto.id;
-    const matricula = createMensalidadeDto.matricula;
   
-    const aluno = await this.alunoRepository.findOneBy({ matricula });
-    const plano = await this.planoRepository.findOne({ where: { id } });
-    const vencimento = createMensalidadeDto.vencimento; 
-  
-    if (!aluno || !plano) {
-      throw new NotFoundException('Aluno ou plano não encontrado');
+    const mensalidade = await this.mensalidadeRepository.findOne({
+        where: { id: id },
+        relations: ['aluno', 'plano'],
+      });
+
+    if (!mensalidade) {
+      throw new NotFoundException('Não foi possível encontrar a mensalidade informada!');
     }
+
+    mensalidade.pago = true 
+    mensalidade.dataPagamento = createMensalidadeDto.dataPagamento
+
+    const mensalidadeSalva = await this.mensalidadeRepository.save(mensalidade);
   
-    const novaMensalidade = this.mensalidadeRepository.create({
-      aluno,
-      plano,
-      valor: plano.valor,
-      vencimento,
-      pago: createMensalidadeDto.pago,
-      dataPagamento: createMensalidadeDto.dataPagamento,
-    });
-  
-    const mensalidadeSalva = await this.mensalidadeRepository.save(novaMensalidade);
-  
+    console.log(mensalidade)
     const comprovante = this.comprovanteRepository.create({
       mensalidade: mensalidadeSalva,
-      alunoNome: aluno.nome,
-      planoNome: plano.descricao,
-      valor: plano.valor,
+      alunoNome: mensalidade.aluno.nome,
+      planoNome: mensalidade.plano.descricao,
+      valor: mensalidade.valor,
       vencimento: mensalidadeSalva.vencimento,
       pago: mensalidadeSalva.pago,
       dataPagamento: mensalidadeSalva.dataPagamento,
@@ -61,11 +56,11 @@ export class MensalidadeService {
     await this.comprovanteRepository.save(comprovante);
   
     return {
-      mensagem: `Mensalidade do aluno ${aluno.nome} paga com sucesso`,
+      mensagem: `Mensalidade do aluno ${mensalidade.aluno.nome} paga com sucesso`,
       comprovante: {
-        aluno: aluno.nome,
-        plano: plano.descricao,
-        valorPago: plano.valor,
+        aluno: mensalidade.aluno.nome,
+        plano: mensalidade.plano.descricao,
+        valorPago: mensalidade.valor,
         dataPagamento: mensalidadeSalva.dataPagamento,
         vencimento: mensalidadeSalva.vencimento,
         pago: mensalidadeSalva.pago,
@@ -77,18 +72,18 @@ export class MensalidadeService {
     const aux = await this.mensalidadeRepository.find({ relations: ['aluno', 'plano'] });
   
     console.log(aux)
-    const mensalidades = aux.map((mensalidade) => {
+    return aux.map((mensalidade) => {
       return {
+        id: mensalidade.id,
         aluno: mensalidade.aluno.nome,
         plano: mensalidade.plano.descricao,
-        valorPago: mensalidade.valor,
+        valor: mensalidade.valor,
         dataPagamento: mensalidade.dataPagamento,
         vencimento: mensalidade.vencimento,
         pago: mensalidade.pago,
       };
     });
-  
-    return { mensalidades };
+
   }
 
   async listarPorAluno(matricula: number) {
@@ -98,6 +93,7 @@ export class MensalidadeService {
     });
   
     return mensalidades.map((mensalidade) => ({
+        id: mensalidade.id,
       aluno: mensalidade.aluno.nome,
       plano: mensalidade.plano.descricao,
       valorPago: mensalidade.valor,
@@ -129,6 +125,7 @@ export class MensalidadeService {
         return vencimento instanceof Date && !isNaN(vencimento.getTime()) && vencimento < hoje;
       })      
       .map((m) => ({
+        id: m.id,
         aluno: m.aluno.nome,
         plano: m.plano.descricao,
         valor: m.valor,
@@ -152,6 +149,7 @@ export class MensalidadeService {
         return vencimento instanceof Date && !isNaN(vencimento.getTime()) && vencimento >= hoje;
       })
       .map((m) => ({
+        id: m.id,
         aluno: m.aluno.nome,
         plano: m.plano.descricao,
         valor: m.valor,

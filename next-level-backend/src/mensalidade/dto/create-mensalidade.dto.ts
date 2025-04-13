@@ -4,10 +4,6 @@ export class CreateMensalidadeDto {
 
     @IsNotEmpty()
     @IsNumber()
-    matricula: number
-
-    @IsNotEmpty()
-    @IsNumber()
     id:number
 
     @IsNotEmpty()
@@ -17,8 +13,4 @@ export class CreateMensalidadeDto {
     @IsNotEmpty()
     @IsString()
     dataPagamento: string;
-
-    @IsNotEmpty()
-    @IsString()
-    vencimento: string
 }

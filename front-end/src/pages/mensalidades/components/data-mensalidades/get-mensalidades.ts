@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export type MensalidadeList = {
+    id: number;
     aluno: string;
     plano: string;
     valor: string;
@@ -10,7 +11,7 @@ export type MensalidadeList = {
 
 export async function getMensalidades(status: string) {
 	try {
-    const response = await axios.get('http://localhost:3000/mensalidade/vencidas')
+    const response = await axios.get('http://localhost:3000/mensalidade/'+ status)
     
 		return response.data;
 

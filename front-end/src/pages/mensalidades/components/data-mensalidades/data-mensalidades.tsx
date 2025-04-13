@@ -15,6 +15,8 @@ import {
     SelectValue,
   } from "@/components/ui/select"
   import { Search, Loader2 } from "lucide-react"
+import FormsPagarMensalidade from "../forms/pagar-mensalidade/formPagarMensalidade";
+import { Reorder } from "framer-motion";
 
 export default function DataMensalidade() {
 
@@ -45,7 +47,11 @@ export default function DataMensalidade() {
 
                 const combinado = [...data, ...dataAux];
 
-                setMensalidadeList(combinado);  
+                setMensalidadeList(combinado); 
+                
+                console.log(data);
+                console.log(dataAux);
+                console.log(tipo);
             } else{
                
                 const data = await getMensalidades(tipo);
@@ -118,26 +124,44 @@ export default function DataMensalidade() {
         {
             accessorKey: 'pago',
             header: () => <div className="font-bold">Pago</div>,
-            cell: ({ row }) => <div className="font-light">{row.getValue('pago')}</div>,
+            cell: ({ row }) => <div className="font-light">{row.getValue('pago') ? "Sim" : "Não"}</div>,
         },
         {
             id: 'actions',
             enableHiding: false,
-            cell: ({ row }) => (
-                <DropdownMenu>
+            cell: ({ row }) => {
+              const isPago = row.original.pago;
+          
+              // Só renderiza o botão se NÃO estiver pago
+              if (!isPago) {
+                return (
+                  <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Abrir Menu</span>
-                            <PencilLine />
-                        </Button>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Abrir Menu</span>
+                        <PencilLine />
+                      </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
-                        </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <FormsPagarMensalidade 
+                          mensalidade={row.original.id}
+                          initialData={{
+                            aluno: row.original.aluno,
+                            valor: row.original.valor,
+                            vencimento: formatarData(row.original.vencimento)
+                          }}
+                          onSave={handleSave}
+                        />
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
-                </DropdownMenu>
-            ),
-        },
+                  </DropdownMenu>
+                );
+              }
+          
+              return null;
+            },
+          }
     ];
 
 
