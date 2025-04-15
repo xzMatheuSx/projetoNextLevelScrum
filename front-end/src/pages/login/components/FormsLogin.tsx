@@ -5,36 +5,32 @@ import { CiUser } from 'react-icons/ci';
 import { AiOutlineEye, AiFillEye } from 'react-icons/ai';
 import { toast } from 'sonner';
 import { BlurFade } from '@/components/BlurFade';
+import { useAuth } from '@/hooks/use-auth';
 
-export default function ProfileForm() {
+export default function LoginForm() {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [showPassword, setShowPassword] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
+	const { login } = useAuth();
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		if (username.length < 2) {
+		if (username.length < 2 || password.length < 1) {
 			toast.error('Preencha todos os campos!');
-			return;
-		}
-		if (password.length < 1) {
-			toast.error('A senha não pode estar vazia.');
 			return;
 		}
 
 		setIsLoading(true);
 
-		const promise = () => new Promise<{ name: string }>((resolve) => setTimeout(() => resolve({ name: username }), 3000));
-
-		toast.promise(promise, {
-			loading: 'Entrando no sistema... ⏳',
-			success: (data) => {
-				return `Bem-vindo à academia, ${data.name}! 💪`;
-			},
-			error: 'Erro na entrada. Tente novamente. 🚫',
-		}).finally(() => setIsLoading(false));
+		try {
+			await login({ usuario: username, senha: password });
+		} catch {
+			toast.error('Erro ao realizar login. Verifique suas credenciais.');
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return (
@@ -94,7 +90,7 @@ export default function ProfileForm() {
 						type="submit"
 						disabled={isLoading}
 					>
-						{isLoading ? 'Enviar' : 'Enviar'}
+						{isLoading ? 'Entrando...' : 'Entrar'}
 					</Button>
 				</div>
 			</BlurFade>
