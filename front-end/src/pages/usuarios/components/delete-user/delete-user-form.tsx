@@ -23,7 +23,7 @@ export default function FormsDeleteUser({ userId, onDelete }: FormsDeleteUserPro
 	const handleDelete = async () => {
 		try {
 			await DeleteUser(userId);
-			toast.success('Usuário deletado com sucesso!');
+			toast.success('Usuário desativado com sucesso!');
 			onDelete();
 			handleClose();
 		} catch (error: unknown) {
@@ -35,23 +35,23 @@ export default function FormsDeleteUser({ userId, onDelete }: FormsDeleteUserPro
 	return (
 		<>
 			<DropdownMenuItem className="text-white cursor-pointer" onClick={handleOpen}>
-				Deletar Usuário
+				Desativar Usuario
 			</DropdownMenuItem>
 
 			<Dialog open={isOpen} onOpenChange={setIsOpen} modal>
 				<DialogContent className="sm:max-w-[425px] bg-[#1a1a1a] border border-[#2A2A2A]">
 					<DialogHeader>
-						<DialogTitle>Deletar Usuário</DialogTitle>
+						<DialogTitle>Desativar Usuario</DialogTitle>
 					</DialogHeader>
 
-					<DialogDescription>Tem certeza que deseja deletar este usuário? Esta ação não pode ser desfeita.</DialogDescription>
+					<DialogDescription>Tem certeza que deseja Desativar este usuário? Esta ação não pode ser desfeita.</DialogDescription>
 
 					<DialogFooter>
 						<Button onClick={handleClose} className="bg-gray-500 text-white">
 							Cancelar
 						</Button>
 						<Button onClick={handleDelete} className="bg-red-500 text-white">
-							Deletar
+							Desativar Usuario
 						</Button>
 					</DialogFooter>
 				</DialogContent>

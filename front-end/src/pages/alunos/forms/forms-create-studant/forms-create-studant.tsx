@@ -218,24 +218,28 @@ export default function FormsCadastro({ onSave }: FormsCadastroProps) {
 								/>
 							</div>
 						</div>
-						<div className="grid items-center gap-4 pt-3">
-							<Label htmlFor="planoContratado">Plano contratado</Label>
-							<Controller
-								name="planoContratado"
-								control={control}
-								render={({ field }) => (
-									<Select {...field} onValueChange={(value) => field.onChange(value)}>
-										<SelectTrigger className={cn('bg-[#1F1F1F] text-white', errors.planoContratado && 'border-red-400')}>
-											<SelectValue placeholder="Selecione o plano" />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value="mensal">Mensal</SelectItem>
-											<SelectItem value="diario">Diário</SelectItem>
-											<SelectItem value="semanal">Semanal</SelectItem>
-										</SelectContent>
-									</Select>
-								)}
-							/>
+						<div className="flex w-full">
+							<div className="grid items-center gap-4 pt-3 w-full ">
+								<Label htmlFor="planoContratado">Plano contratado</Label>
+								<Controller
+									name="planoContratado"
+									control={control}
+									render={({ field }) => (
+										<Select {...field} onValueChange={(value) => field.onChange(value)}>
+											<SelectTrigger
+												className={cn('bg-[#1F1F1F] text-white w-full', errors.planoContratado && 'border-red-400')}
+											>
+												<SelectValue placeholder="Selecione o plano" />
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value="mensal">Mensal</SelectItem>
+												<SelectItem value="diario">Diário</SelectItem>
+												<SelectItem value="semanal">Semanal</SelectItem>
+											</SelectContent>
+										</Select>
+									)}
+								/>
+							</div>
 						</div>
 						<Separator className="my-5" />
 						<DialogFooter>
