@@ -24,9 +24,9 @@ interface Studant {
 	email: string;
 	telefone: string;
 	diaVencimento: number;
-	usuarioAltId: number;
 	dataNascimento: string;
 	responsavel?: string;
+	usuarioAltId?: number;
 }
 
 export const cleanData = (data: FormData): Studant => {
@@ -37,9 +37,9 @@ export const cleanData = (data: FormData): Studant => {
 		email: data.email,
 		telefone: data.telefone,
 		diaVencimento: parseInt(dia, 10),
-		usuarioAltId: 1,
 		dataNascimento: new Date(data.dataNascimento.split('/').reverse().join('-')).toISOString(),
 		responsavel: data.responsavel,
+		usuarioAltId: data.usuarioAlt || 'Usuário não informado',
 	};
 };
 
