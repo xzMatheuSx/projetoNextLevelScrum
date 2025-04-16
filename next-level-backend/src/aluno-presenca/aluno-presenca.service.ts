@@ -38,7 +38,7 @@ export class AlunoPresencaService {
     })[0]; 
   
     if (!ultimaMensalidade || !ultimaMensalidade.plano) {
-      throw new NotFoundException('Plano não encontrado na última mensalidade');
+      //throw new NotFoundException('Plano não encontrado na última mensalidade');
     }
   
     const plano = ultimaMensalidade.plano;
@@ -47,7 +47,7 @@ export class AlunoPresencaService {
     const limiteSemana = Number(plano.qtdDiasSemana);
   
     if (isNaN(limiteSemana)) {
-      throw new BadRequestException('Quantidade de dias por semana inválida no plano');
+      //throw new BadRequestException('Quantidade de dias por semana inválida no plano');
     }
   
     
