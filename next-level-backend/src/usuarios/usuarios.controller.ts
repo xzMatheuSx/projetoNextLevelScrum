@@ -23,6 +23,12 @@ export class UsuariosController {
     return this.usuariosService.findAll();
   }
 
+  @Get('/ativos')
+  @ApiOperation({ summary: 'Retorna todos os usuarios' })
+  findAllAtivos() {
+    return this.usuariosService.findAllAtivos();
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Retorna usuario por id' })
   findOne(@Param('id') id: number) {

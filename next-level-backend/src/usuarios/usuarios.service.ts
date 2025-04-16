@@ -38,6 +38,16 @@ export class UsuariosService {
     return users.map((u: Usuario) => new PesquisaUsuarioDTO(u.id, u.nome, u.email, u.ativo));
     }
 
+
+    async findAllAtivos(): Promise<PesquisaUsuarioDTO[]> {
+      let users = await this.UsuariosRepository.find();
+  
+      let usuariosAtivos = users.filter((u: Usuario) => u.ativo === true);
+  
+      return usuariosAtivos.map((u: Usuario) => new PesquisaUsuarioDTO(u.id, u.nome, u.email, u.ativo));
+  }
+  
+
   async findOne(id: number): Promise<Usuario> {
     const Usuario = await this.UsuariosRepository.findOne({ where: { id} });
     if (!Usuario) {
