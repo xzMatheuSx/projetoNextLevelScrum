@@ -111,7 +111,7 @@ return {
   async findAll() {
     const presencas = await this.presencaRepository.find({ relations: ['aluno'] });
   
-    return presencas.map((presenca) => ({
+    /*return presencas.map((presenca) => ({
       aluno: {
         matricula: presenca.aluno.matricula,
         nome: presenca.aluno.nome,
@@ -119,7 +119,14 @@ return {
       entrada: presenca.entrada,
       saida: presenca.saida,
       duracao: presenca.duracao,
-    }));
+    }));*/
+    return presencas.map((presenca) => ({
+        aluno: presenca.aluno.matricula,
+        nome: presenca.aluno.nome,
+        entrada: this.retornaDataFormatada(presenca.entrada),
+        saida: presenca.saida ? this.retornaDataFormatada(presenca.saida) : "",
+        duracao: this.retornaDuracaoMomentoAtual(presenca.entrada, presenca.saida),
+      }));
   }
 
   async retornaTodosAlunosPresentes() {
@@ -151,10 +158,8 @@ return {
     const presencas = await this.presencaRepository
       .createQueryBuilder('presenca')
       .leftJoinAndSelect('presenca.aluno', 'aluno')
-      .where('presenca.saida IS NULL')
-      .andWhere('presenca.entrada BETWEEN :inicio AND :fim', {
-        inicio: inicioDoDia.toISOString(),
-        fim: fimDoDia.toISOString(),
+      .where('date(presenca.entrada) = date(:inicio)', {
+        inicio: inicioDoDia
       })
       .orderBy('presenca.entrada')
       .getMany();

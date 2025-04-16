@@ -1,9 +1,9 @@
 import axios, { AxiosError } from "axios";
 import { z } from "zod";
 
-export async function getAlunoPresenca() {
+export async function getAlunoPresenca(presenca: string) {
     try {
-        const response = await axios.get('http://localhost:3000/aluno-presenca/presentes');
+        const response = await axios.get('http://localhost:3000/aluno-presenca/'+presenca);
         return response.data;
     } catch (error: unknown) {
         if (axios.isAxiosError(error)) {

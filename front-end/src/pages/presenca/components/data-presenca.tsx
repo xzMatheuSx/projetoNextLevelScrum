@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowLeft, ArrowRight, PencilLine } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Loader2, PencilLine, Search } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,6 +15,7 @@ import {
     SelectValue,
   } from "@/components/ui/select"
 import FormsMarcarPresenca from "../forms/forms-marcar-entrada";
+import FormsMarcarSaida from "../forms/forms-marcar-saida";
 
 export default function DataPresenca() {
 
@@ -28,9 +29,9 @@ export default function DataPresenca() {
    
     const fetchPresencas = React.useCallback(async () => {
         try {
-            const data = await getAlunoPresenca();
+            setPresencaFiltro("presentes")
+            pesquisarPresencas("presentes");
 
-            setAlunosPresentes(data);
         } catch (error) {
             console.error('Erro ao buscar os tipos de produto:', error);
         }
@@ -86,22 +87,32 @@ export default function DataPresenca() {
         {
             id: 'actions',
             enableHiding: false,
-            cell: ({ row }) => (
+            cell: ({ row }) => {
+              const saida = row.original.saida
+          
+              // Se a saída não for vazia, não renderiza nada
+              if (saida && saida !== '') return null
+          
+              return (
                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Abrir Menu</span>
-                            <PencilLine />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
-                           
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                      <span className="sr-only">Abrir Menu</span>
+                      <PencilLine />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>
+                      <FormsMarcarSaida
+                        matricula={row.original.matricula}
+                        onSave={handleSave}
+                      />
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
                 </DropdownMenu>
-            ),
-        },
+              )
+            },
+          }
     ];
 
 
@@ -128,38 +139,77 @@ export default function DataPresenca() {
         },
     });
 
+    async function pesquisarPresencas(presenca: string){
+        setLoading(true); 
+        try {
+                let data = await getAlunoPresenca(presenca);
+
+                console.log(data)
+                setAlunosPresentes(data); 
+                
+          
+        
+        } catch (error) {
+            console.error('Erro ao buscar as mensalidades:', error);
+        } finally {
+            setLoading(false); 
+        }
+    }
+    
+    const [loading, setLoading] = React.useState(false);
+    
     return (
         <div className="w-full">
             <h1>Presença</h1>
 
-            <div className="flex items-center py-4 justify-between gap-10">
+            <div className="flex flex-wrap items-center gap-4 py-4">
+            {/* Input de pesquisa - cresce conforme espaço */}
+            <div className="flex-grow min-w-[200px] max-w-[500px]">
                 <Input
-                    placeholder="Pesquisar aluno..."
-                    value={(table.getColumn('nome')?.getFilterValue() as string) ?? ''}
-                    onChange={(event) => table.getColumn('nome')?.setFilterValue(event.target.value)}
-                    className="max-w-xl"
+                placeholder="Pesquisar aluno..."
+                value={(table.getColumn('nome')?.getFilterValue() as string) ?? ''}
+                onChange={(event) => table.getColumn('nome')?.setFilterValue(event.target.value)}
+                className="w-full"
                 />
+            </div>
 
-                <Select
-                value={presencaFiltro}
-                onValueChange={(value) => setPresencaFiltro(value)}
-                >
-                <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Filtrar por vencimento" />
+            {/* Select - tamanho fixo ou ajustável */}
+            <div className="flex-shrink-0 w-[180px]">
+                <Select value={presencaFiltro} onValueChange={(value) => setPresencaFiltro(value)}>
+                <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Filtrar por presença" />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="presentes">Presentes</SelectItem>
-                    <SelectItem value="do-dia">Do dia</SelectItem>
+                    <SelectItem value="presentes-dia">Do dia</SelectItem>
                     <SelectItem value="todos">Todos</SelectItem>
                 </SelectContent>
                 </Select>
-                <div>
-                </div>
             </div>
+
+            {/* Botão de pesquisa - se mantém compacto */}
+            <div className="flex-shrink-0">
+                <Button
+                onClick={() => pesquisarPresencas(presencaFiltro!)}
+                className="flex items-center gap-2 whitespace-nowrap"
+                disabled={loading}
+                >
+                {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                    <Search className="w-4 h-4" />
+                )}
+                {loading ? 'Carregando...' : 'Pesquisar'}
+                </Button>
+            </div>
+
             <div className="flex items-end py-4 justify-between gap-10">
-            <div>
                 <FormsMarcarPresenca onSave={handleSave} />
             </div>
+</div>
+
+            <div className="flex items-end py-4 justify-between gap-10">
+    
             </div>
 
 

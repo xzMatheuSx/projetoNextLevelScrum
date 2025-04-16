@@ -21,7 +21,7 @@ export class AlunoPresencaController {
    return this.alunoPresencaService.checkOut(createAlunoSaidaDto);
  }
 
- @Get()
+ @Get("todos")
  @ApiOperation({ summary: 'Pesquisa todas presenças' })
  findAll() {
    return this.alunoPresencaService.findAll();
