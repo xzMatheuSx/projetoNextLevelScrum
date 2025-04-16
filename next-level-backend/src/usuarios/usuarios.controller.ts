@@ -24,7 +24,7 @@ export class UsuariosController {
   }
 
   @Get('/ativos')
-  @ApiOperation({ summary: 'Retorna todos os usuarios' })
+  @ApiOperation({ summary: 'Retorna todos os usuarios ativos' })
   findAllAtivos() {
     return this.usuariosService.findAllAtivos();
   }
