@@ -21,6 +21,7 @@ import FormsRegister from '../../forms/forms-create-studant/forms-create-studant
 import { getAlunos, Aluno } from './get-studant';
 import { toast } from 'sonner';
 import FormsEditAluno from '../../forms/edit-studant/forms-edit-studant';
+import FormsDeleteStudant from '../delete-studant/forms-delete-studant';
 
 export default function DataTableAlunos() {
 	const [alunos, setAlunos] = React.useState<Aluno[]>([]);
@@ -95,13 +96,12 @@ export default function DataTableAlunos() {
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
 						<DropdownMenuItem>
-							<FormsEditAluno
-							 alunoId= {row.getValue('matricula')}
-							 onSave={() => fetchAlunos} />
-							
+							<FormsEditAluno alunoId={row.getValue('matricula')} onSave={() => fetchAlunos} />
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem className="bg-red-400/25 hover:bg-red-400">Excluir aluno</DropdownMenuItem>
+						<DropdownMenuItem className="bg-red-400/25 hover:bg-red-400">
+							<FormsDeleteStudant userMatricula={row.original.matricula} onDelete={fetchAlunos} />
+						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 			),
