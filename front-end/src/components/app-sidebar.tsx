@@ -21,7 +21,7 @@ const data = {
 			items: [
 				{
 					title: 'Presença Aluno',
-					url: '/presencaAluno',
+					url: '/presenca',
 				},
 			],
 		},
@@ -66,7 +66,7 @@ const data = {
 			items: [
 				{
 					title: 'Equipamentos',
-					url: '#',
+					url: '/equipamentos',
 				},
 			],
 		},

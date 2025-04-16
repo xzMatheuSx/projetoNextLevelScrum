@@ -1,17 +1,10 @@
-import { Outlet } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import LoginPage from '@/pages/login';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
 
 export default function PrivateRoute() {
-	const { user } = useAuth();
-	const [loading, setLoading] = useState(true);
+	const { user, isLoading } = useAuth();
 
-	useEffect(() => {
-		setLoading(false);
-	}, [user]);
+	if (isLoading) return <div>Carregando...</div>;
 
-	if (loading) return <div>Carregando...</div>;
-
-	return user ? <Outlet /> : <LoginPage />;
+	return user ? <Outlet /> : <Navigate to="/" replace />;
 }
