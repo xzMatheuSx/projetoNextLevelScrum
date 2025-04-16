@@ -11,9 +11,7 @@ import TipoProdutos from '@/pages/tipo-produtos';
 import Presenca from '@/pages/presenca';
 
 export default function AppRoutes() {
-	const { user, isLoading } = useAuth();
-
-	if (isLoading) return <div>Carregando...</div>;
+	const { user } = useAuth();
 
 	return (
 		<BrowserRouter>
