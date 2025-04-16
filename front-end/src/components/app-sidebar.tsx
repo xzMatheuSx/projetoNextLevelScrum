@@ -70,6 +70,10 @@ const data = {
 					title: 'Usuarios',
 					url: '/usuarios',
 				},
+				{
+					title: 'Controle de presenças',
+					url: '/presenca',
+				},
 			],
 		},
 	],

@@ -7,6 +7,7 @@ import Layout from '../layout';
 import Planos from '@/pages/planos';
 import TipoProdutos from '@/pages/tipo-produtos';
 import Mensalidades from '@/pages/mensalidades';
+import Presencas from '@/pages/presenca';
 
 export default function AppRoutes() {
 	return (
@@ -19,6 +20,7 @@ export default function AppRoutes() {
 					<Route path="/planos" element={<Planos />} />
 					<Route path="/tipo-produtos" element={<TipoProdutos />} />
 					<Route path="/mensalidade" element={<Mensalidades />} />
+					<Route path="/presenca" element={<Presencas />} />
 				</Route>
 			</Routes>
 		</BrowserRouter>

@@ -33,6 +33,18 @@ export class AlunoPresencaController {
    return this.alunoPresencaService.findByMatricula({ alunoMatricula: matricula } as any);
  }
 
+ @Get("presentes")
+ @ApiOperation({ summary: 'Pesquisa todos os alunos presentes' })
+ retornaTodosAlunosPresentes() {
+   return this.alunoPresencaService.retornaTodosAlunosPresentes();
+ }
+
+ @Get("presentes-dia")
+ @ApiOperation({ summary: 'Pesquisa todos os alunos presentes' })
+ retornaTodosPresentesDia() {
+   return this.alunoPresencaService.retornaTodosPresentesDia();
+ }
+
 
 /*
   @Get()

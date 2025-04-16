@@ -122,7 +122,86 @@ return {
     }));
   }
 
+  async retornaTodosAlunosPresentes() {
+    const presencas = await this.presencaRepository
+    .createQueryBuilder('presenca')
+    .leftJoinAndSelect('presenca.aluno', 'aluno')
+    .where('presenca.saida IS NULL')
+    .orderBy('presenca.entrada')
+    .getMany();
 
+      return presencas.map((presenca) => ({
+      aluno: presenca.aluno.matricula,
+      nome: presenca.aluno.nome,
+      entrada: this.retornaDataFormatada(presenca.entrada),
+      saida: '',
+      duracao: this.retornaDuracaoMomentoAtual(presenca.entrada, undefined),
+    }));
+  }
+
+  async retornaTodosPresentesDia(){
+    const hoje = new Date();
+
+    const inicioDoDia = new Date(hoje);
+    inicioDoDia.setUTCHours(0, 0, 0, 0);
+  
+    const fimDoDia = new Date(hoje);
+    fimDoDia.setUTCHours(23, 59, 59, 999);
+  
+    const presencas = await this.presencaRepository
+      .createQueryBuilder('presenca')
+      .leftJoinAndSelect('presenca.aluno', 'aluno')
+      .where('presenca.saida IS NULL')
+      .andWhere('presenca.entrada BETWEEN :inicio AND :fim', {
+        inicio: inicioDoDia.toISOString(),
+        fim: fimDoDia.toISOString(),
+      })
+      .orderBy('presenca.entrada')
+      .getMany();
+  
+    return presencas.map((presenca) => ({
+      aluno: presenca.aluno.matricula,
+      nome: presenca.aluno.nome,
+      entrada: this.retornaDataFormatada(presenca.entrada),
+      saida: presenca.saida ? this.retornaDataFormatada(presenca.saida) : "",
+      duracao: this.retornaDuracaoMomentoAtual(presenca.entrada, presenca.saida),
+    }));
+  }
+
+
+  retornaDuracaoMomentoAtual(dataEntrada: Date, saida: Date | undefined): string {
+    let agora = new Date();
+    if (saida) {
+        agora = saida
+    }
+ 
+    const diffMs = agora.getTime() - dataEntrada.getTime();
+  
+    const diffHoras = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  
+    const horas = String(diffHoras).padStart(2, '0');
+    const minutos = String(diffMinutos).padStart(2, '0');
+  
+    return `${horas}:${minutos}`;
+  }
+
+  retornaDataFormatada(data: Date){
+    const date = new Date(data);
+
+    const formatted = date.toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false, 
+    timeZone: 'America/Sao_Paulo' 
+    });
+
+    const cleaned = formatted.replace(',', '');
+
+    return cleaned
+  }
   }
 
 
