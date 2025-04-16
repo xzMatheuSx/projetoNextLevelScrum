@@ -114,11 +114,8 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 							<DialogTitle>Editar Usuário</DialogTitle>
 							<DialogDescription>Atualize os dados desejados e clique em Salvar.</DialogDescription>
 						</DialogHeader>
-
 						<Separator className="my-5" />
-
 						<div className="grid gap-5 py-4 grid-cols-1 sm:grid-cols-2">
-							{/* Nome */}
 							<div className="grid items-center gap-4">
 								<Label htmlFor="nome">Nome</Label>
 								<Controller
@@ -133,8 +130,6 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 									)}
 								/>
 							</div>
-
-							{/* Usuário */}
 							<div className="grid items-center gap-4">
 								<Label htmlFor="usuario">Usuário</Label>
 								<Controller
@@ -149,8 +144,6 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 									)}
 								/>
 							</div>
-
-							{/* Email */}
 							<div className="grid items-center gap-4">
 								<Label htmlFor="email">E-mail</Label>
 								<Controller
@@ -166,8 +159,6 @@ export default function FormsEditUser({ userId, initialData, onSave }: FormsEdit
 									)}
 								/>
 							</div>
-
-							{/* Senha */}
 							<div className="grid items-center gap-4 relative">
 								<Label htmlFor="senha">Senha</Label>
 								<Controller
