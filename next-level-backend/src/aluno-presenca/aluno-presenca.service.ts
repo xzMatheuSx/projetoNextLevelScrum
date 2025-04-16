@@ -7,6 +7,7 @@ import { CreateAlunoPresencaDto } from './dto/create-aluno-presenca.dto';
 import { UpdateAlunoPresencaDto } from './dto/update-aluno-presenca.dto';
 import { RetonaAlunoPresencaDTO } from './dto/retorna-aluno-presenca.dto';
 import { SaidaDTO } from './dto/create-aluno-saida.dto';
+import { Plano } from 'src/plano/entities/plano.entity';
 
 @Injectable()
 export class AlunoPresencaService {
@@ -16,17 +17,63 @@ export class AlunoPresencaService {
 
     @InjectRepository(Aluno)
     private alunoRepository: Repository<Aluno>,
+
   ) {}
 
 
   async checkIn(dto: CreateAlunoPresencaDto) {
+  
     const aluno = await this.alunoRepository.findOne({
       where: { matricula: dto.alunoMatricula },
+      relations: ['mensalidades', 'mensalidades.plano'], 
     });
   
     if (!aluno) {
       throw new NotFoundException('Aluno não encontrado');
     }
+  
+    
+    const ultimaMensalidade = aluno.mensalidades?.sort((a, b) => {
+      return new Date(b.vencimento).getTime() - new Date(a.vencimento).getTime();
+    })[0]; 
+  
+    if (!ultimaMensalidade || !ultimaMensalidade.plano) {
+      throw new NotFoundException('Plano não encontrado na última mensalidade');
+    }
+  
+    const plano = ultimaMensalidade.plano;
+  
+    
+    const limiteSemana = Number(plano.qtdDiasSemana);
+  
+    if (isNaN(limiteSemana)) {
+      throw new BadRequestException('Quantidade de dias por semana inválida no plano');
+    }
+  
+    
+    const hoje = new Date();
+    const inicioDaSemana = new Date(hoje);
+    inicioDaSemana.setDate(hoje.getDate() - hoje.getDay());
+    inicioDaSemana.setHours(0, 0, 0, 0);
+  
+    const fimDaSemana = new Date(hoje);
+    fimDaSemana.setDate(hoje.getDate() + (6 - hoje.getDay()));
+    fimDaSemana.setHours(23, 59, 59, 999);
+  
+  
+    const presencasDaSemana = await this.presencaRepository.count({
+      where: {
+        aluno,
+        entrada: Between(inicioDaSemana, fimDaSemana), 
+      },
+    });
+  
+    if (presencasDaSemana >= limiteSemana) {
+      throw new BadRequestException(
+        `Limite de ${limiteSemana} check-ins por semana atingido`,
+      );
+    }
+  
   
     const aberta = await this.presencaRepository.findOne({
       where: { aluno, saida: IsNull() },
@@ -36,16 +83,18 @@ export class AlunoPresencaService {
       throw new BadRequestException('Já existe um check-in aberto.');
     }
   
+  
     const presenca = this.presencaRepository.create({
       aluno,
       entrada: new Date(),
     });
   
-    
-     const aux = this.presencaRepository.save(presenca);
-     return (`entrada registrada com sucesso ${(await aux).aluno.nome}`)
+    const aux = await this.presencaRepository.save(presenca);
+  
+    return `Entrada registrada com sucesso para ${aux.aluno.nome}`;
   }
 
+  
 
   async checkOut(createAlunoSaidaDto: SaidaDTO) {
     const { alunoMatricula } = createAlunoSaidaDto;
