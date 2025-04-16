@@ -1,13 +1,13 @@
-import DataTablePlanos from '../planos/components/data-planos/data-planos';
+import DataPresenca from "./components/data-presenca";
 
-function Presenca() {
-	return (
-		<>
-			<div>
-				<DataTablePlanos />
-			</div>
-		</>
-	);
+function Presencas() {
+    return (
+        <>
+            <div>
+                <DataPresenca />
+            </div>
+        </>
+    );
 }
 
-export default Presenca;
+export default Presencas;

@@ -20,6 +20,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import FormsRegister from '../../forms/forms-create-studant/forms-create-studant';
 import { getAlunos, Aluno } from './get-studant';
 import { toast } from 'sonner';
+import FormsEditAluno from '../../forms/edit-studant/forms-edit-studant';
 
 export default function DataTableAlunos() {
 	const [alunos, setAlunos] = React.useState<Aluno[]>([]);
@@ -93,7 +94,12 @@ export default function DataTableAlunos() {
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
-						<DropdownMenuItem>Editar Aluno</DropdownMenuItem>
+						<DropdownMenuItem>
+							<FormsEditAluno
+							 alunoId= {row.getValue('matricula')}
+							 onSave={() => fetchAlunos} />
+							
+						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem className="bg-red-400/25 hover:bg-red-400">Excluir aluno</DropdownMenuItem>
 					</DropdownMenuContent>

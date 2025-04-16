@@ -21,7 +21,7 @@ export class AlunoPresencaController {
    return this.alunoPresencaService.checkOut(createAlunoSaidaDto);
  }
 
- @Get()
+ @Get("todos")
  @ApiOperation({ summary: 'Pesquisa todas presenças' })
  findAll() {
    return this.alunoPresencaService.findAll();
@@ -31,6 +31,18 @@ export class AlunoPresencaController {
  @ApiOperation({ summary: 'Pesquisa todas presenças de um aluno por matrícula' })
  findByMatricula(@Param('matricula') matricula: number) {
    return this.alunoPresencaService.findByMatricula({ alunoMatricula: matricula } as any);
+ }
+
+ @Get("presentes")
+ @ApiOperation({ summary: 'Pesquisa todos os alunos presentes' })
+ retornaTodosAlunosPresentes() {
+   return this.alunoPresencaService.retornaTodosAlunosPresentes();
+ }
+
+ @Get("presentes-dia")
+ @ApiOperation({ summary: 'Pesquisa todos os alunos presentes' })
+ retornaTodosPresentesDia() {
+   return this.alunoPresencaService.retornaTodosPresentesDia();
  }
 
 

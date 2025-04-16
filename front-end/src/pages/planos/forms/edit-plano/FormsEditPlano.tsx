@@ -61,8 +61,6 @@ export default function FormsEditPlanos({ planoId, initialData, onSave }: FormsE
 	};
 
 	const onSubmit = async (data: FormData) => {
-		// Só envia dados modificados
-		//const updatedData = Object.fromEntries(Object.entries(data).filter(([key, value]) => value !== initialData[key as keyof FormData]));
 
 		try {
 			await patchPlano(data, planoId);
