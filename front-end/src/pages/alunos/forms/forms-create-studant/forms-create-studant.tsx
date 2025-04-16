@@ -212,7 +212,7 @@ export default function FormsCadastro({ onSave }: FormsCadastroProps) {
 									)}
 								/>
 							</div>
-							{age < 14 && (
+							{age < 18 && (
 								<div className="grid items-center gap-4">
 									<Label htmlFor="responsavel">Responsável</Label>
 									<Controller
