@@ -1,13 +1,13 @@
-import DataTablePlanos from "./components/data-planos/data-planos";
+import DataTablePlanos from './components/data-planos/data-planos';
 
 function Planos() {
-    return (
-        <>
-            <div>
-                <DataTablePlanos />
-            </div>
-        </>
-    );
+	return (
+		<>
+			<div>
+				<DataTablePlanos />
+			</div>
+		</>
+	);
 }
 
 export default Planos;

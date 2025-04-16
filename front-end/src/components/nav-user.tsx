@@ -1,18 +1,18 @@
 'use client';
 
-import { ChevronsUpDown, LogOut, UserRound } from 'lucide-react';
+import { ChevronsUpDown, LogOut } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
+import { useAuth } from '@/hooks/use-auth';
 
 export function NavUser({
 	user,
@@ -24,6 +24,7 @@ export function NavUser({
 	};
 }) {
 	const { isMobile } = useSidebar();
+	const { logout } = useAuth();
 
 	return (
 		<SidebarMenu>
@@ -60,16 +61,9 @@ export function NavUser({
 							</div>
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
-						<DropdownMenuGroup>
-							<DropdownMenuItem>
-								<UserRound />
-								Perfil
-							</DropdownMenuItem>
-						</DropdownMenuGroup>
-						<DropdownMenuSeparator />
-						<DropdownMenuItem>
+						<DropdownMenuItem onClick={() => logout()}>
 							<LogOut />
-							Log out
+							Sair
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>

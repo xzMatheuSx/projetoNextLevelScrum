@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { BookOpen, Bot, Settings2, SquareTerminal } from 'lucide-react';
+
+import { BookOpen, Settings2, SquareTerminal, UsersRound } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -11,22 +12,34 @@ const data = {
 		email: 'Emanoel@gmail.com',
 		avatar: './images/userImage.png',
 	},
+
 	navMain: [
 		{
-			title: 'Vendas',
+			title: 'Presença',
 			url: '#',
-			icon: Bot,
+			icon: UsersRound,
 			items: [
 				{
-					title: 'Vendas',
-					url: '#',
-				},
-				{
-					title: 'Tipo produtos',
-					url: '/tipo-produtos',
+					title: 'Presença Aluno',
+					url: '/presenca',
 				},
 			],
 		},
+		// {
+		// 	title: 'Vendas',
+		// 	url: '#',
+		// 	icon: Bot,
+		// 	items: [
+		// 		{
+		// 			title: 'Vendas',
+		// 			url: '#',
+		// 		},
+		// 		{
+		// 			title: 'Tipo produtos',
+		// 			url: '/tipo-produtos',
+		// 		},
+		// 	],
+		// },
 		{
 			title: 'Financeiro',
 			url: '#',
@@ -43,7 +56,7 @@ const data = {
 				{
 					title: 'Planos',
 					url: '/planos',
-				}
+				},
 			],
 		},
 		{
@@ -53,7 +66,7 @@ const data = {
 			items: [
 				{
 					title: 'Equipamentos',
-					url: '#',
+					url: '/equipamentos',
 				},
 			],
 		},

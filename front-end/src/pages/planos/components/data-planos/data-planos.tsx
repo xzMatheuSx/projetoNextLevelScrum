@@ -1,42 +1,52 @@
-import React from "react";
-import { getPlanos, PlanoList } from "./get-planos";
+import React from 'react';
+import { getPlanos, PlanoList } from './get-planos';
 import { ArrowLeft, ArrowRight, PencilLine } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState } from "@tanstack/react-table";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+	ColumnDef,
+	ColumnFiltersState,
+	flexRender,
+	getCoreRowModel,
+	getFilteredRowModel,
+	getPaginationRowModel,
+	getSortedRowModel,
+	SortingState,
+	useReactTable,
+	VisibilityState,
+} from '@tanstack/react-table';
 import { Checkbox } from '@/components/ui/checkbox';
-import FormsEditPlano from "../../forms/edit-plano/FormsEditPlano";
-import FormsPlanos from "../../forms/create-plano-forms/create-plano-forms";
+import FormsEditPlano from '../../forms/edit-plano/FormsEditPlano';
+import FormsPlanos from '../../forms/create-plano-forms/create-plano-forms';
 
 export default function DataTablePlanos() {
+	const [planosList, setPlanosList] = React.useState<PlanoList[]>([]);
+	const [sorting, setSorting] = React.useState<SortingState>([]);
+	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+	const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+	const [rowSelection, setRowSelection] = React.useState({});
 
-    const [planosList, setPlanosList] = React.useState<PlanoList[]>([]);
-    const [sorting, setSorting] = React.useState<SortingState>([]);
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-    const [rowSelection, setRowSelection] = React.useState({});
+	const fetchPlanos = React.useCallback(async () => {
+		try {
+			const data = await getPlanos();
+			setPlanosList(data);
+		} catch (error) {
+			console.error('Erro ao buscar os pllanos:', error);
+		}
+	}, []);
 
+	React.useEffect(() => {
+		fetchPlanos();
+	}, [fetchPlanos]);
 
-    const fetchPlanos = React.useCallback(async () => {
-        try {
-            const data = await getPlanos();
-            setPlanosList(data);
-        } catch (error) {
-            console.error('Erro ao buscar os pllanos:', error);
-        }
-    }, []);
-
-    React.useEffect(() => {
-        fetchPlanos();
-    }, [fetchPlanos]);
-    
-    const handleSave = async () => {
+	const handleSave = async () => {
+		console.log('AQUIIIIIIIIIII');
 		await fetchPlanos();
 	};
 
-    const columns: ColumnDef<PlanoList>[] = [
+	const columns: ColumnDef<PlanoList>[] = [
 		{
 			id: 'select',
 			header: ({ table }) => (
@@ -60,7 +70,7 @@ export default function DataTablePlanos() {
 			header: () => <div className="font-bold">Quantidade dias semana</div>,
 			cell: ({ row }) => <div className="font-light">{row.getValue('qtdDiasSemana')}</div>,
 		},
-        {
+		{
 			accessorKey: 'valor',
 			header: () => <div className="font-bold">Valor</div>,
 			cell: ({ row }) => <div className="font-light">{row.getValue('valor')}</div>,
@@ -94,31 +104,30 @@ export default function DataTablePlanos() {
 		},
 	];
 
+	const table = useReactTable({
+		data: planosList,
+		columns,
+		onSortingChange: setSorting,
+		onColumnFiltersChange: setColumnFilters,
+		getCoreRowModel: getCoreRowModel(),
+		getPaginationRowModel: getPaginationRowModel(),
+		getSortedRowModel: getSortedRowModel(),
+		getFilteredRowModel: getFilteredRowModel(),
+		onColumnVisibilityChange: setColumnVisibility,
+		onRowSelectionChange: setRowSelection,
+		state: {
+			sorting,
+			columnFilters,
+			columnVisibility,
+			rowSelection,
+			pagination: {
+				pageIndex: 0,
+				pageSize: 13,
+			},
+		},
+	});
 
-    const table = useReactTable({
-        data: planosList,
-        columns,
-        onSortingChange: setSorting,
-        onColumnFiltersChange: setColumnFilters,
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        onColumnVisibilityChange: setColumnVisibility,
-        onRowSelectionChange: setRowSelection,
-        state: {
-            sorting,
-            columnFilters,
-            columnVisibility,
-            rowSelection,
-            pagination: {
-                pageIndex: 0,
-                pageSize: 13,
-            },
-        },
-    });
-
-    return (
+	return (
 		<div className="w-full">
 			<h1>Planos</h1>
 			<div className="flex items-center py-4 justify-between gap-10">
@@ -169,5 +178,4 @@ export default function DataTablePlanos() {
 			)}
 		</div>
 	);
-
 }

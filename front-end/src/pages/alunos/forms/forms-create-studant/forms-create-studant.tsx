@@ -1,6 +1,8 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 import { useForm, Controller, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import axios from 'axios';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -11,15 +13,40 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 import { schema, FormData, postAluno } from './create-studant';
+import { useAuth } from '@/hooks/use-auth';
 
 interface FormsCadastroProps {
 	onSave: () => void;
 }
 
+interface Plano {
+	id: number;
+	nome: string;
+	descricao: string;
+}
+
 export default function FormsCadastro({ onSave }: FormsCadastroProps) {
 	const [isDialogOpen, setDialogOpen] = React.useState(false);
+	const [planos, setPlanos] = React.useState<Plano[]>([]);
 	const openDialog = () => setDialogOpen(true);
 	const closeDialog = () => setDialogOpen(false);
+
+	const { user: usuario } = useAuth();
+
+	useEffect(() => {
+		const fetchPlanos = async () => {
+			try {
+				const response = await axios.get('http://localhost:3000/plano');
+				setPlanos(response.data);
+			} catch (error) {
+				toast.error('Erro ao carregar planos disponíveis');
+			}
+		};
+
+		if (isDialogOpen) {
+			fetchPlanos();
+		}
+	}, [isDialogOpen]);
 
 	const {
 		handleSubmit,
@@ -46,6 +73,10 @@ export default function FormsCadastro({ onSave }: FormsCadastroProps) {
 	const age = dataNascimento ? new Date().getFullYear() - new Date(dataNascimento.split('/').reverse().join('-')).getFullYear() : 0;
 
 	const onSubmit = async (data: FormData) => {
+		if (usuario && usuario.id) {
+			data.usuario = Number(usuario.id);
+		}
+
 		const result = await trigger();
 		if (!result) {
 			Object.entries(errors).forEach(([, error]) => {
@@ -196,14 +227,14 @@ export default function FormsCadastro({ onSave }: FormsCadastroProps) {
 									render={({ field }) => (
 										<Input
 											{...field}
-											placeholder="HH:MM"
+											placeholder="Ex: 18:00"
 											className={cn('bg-[#1F1F1F] text-white', errors.horarioTreino && 'border-red-400')}
 										/>
 									)}
 								/>
 							</div>
 							<div className="grid items-center gap-4">
-								<Label htmlFor="dataVencimento">Data Vencimento</Label>
+								<Label htmlFor="dataVencimento">Data de Vencimento</Label>
 								<Controller
 									name="dataVencimento"
 									control={control}
@@ -218,30 +249,35 @@ export default function FormsCadastro({ onSave }: FormsCadastroProps) {
 								/>
 							</div>
 						</div>
-						<div className="grid items-center gap-4 pt-3">
-							<Label htmlFor="planoContratado">Plano contratado</Label>
-							<Controller
-								name="planoContratado"
-								control={control}
-								render={({ field }) => (
-									<Select {...field} onValueChange={(value) => field.onChange(value)}>
-										<SelectTrigger className={cn('bg-[#1F1F1F] text-white', errors.planoContratado && 'border-red-400')}>
-											<SelectValue placeholder="Selecione o plano" />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value="mensal">Mensal</SelectItem>
-											<SelectItem value="diario">Diário</SelectItem>
-											<SelectItem value="semanal">Semanal</SelectItem>
-										</SelectContent>
-									</Select>
-								)}
-							/>
+
+						<div className="flex w-full">
+							<div className="grid items-center gap-4 pt-3 w-full">
+								<Label htmlFor="planoContratado">Plano contratado</Label>
+								<Controller
+									name="planoContratado"
+									control={control}
+									render={({ field }) => (
+										<Select {...field} onValueChange={field.onChange} defaultValue={field.value}>
+											<SelectTrigger
+												className={cn('bg-[#1F1F1F] text-white w-full', errors.planoContratado && 'border-red-400')}
+											>
+												<SelectValue placeholder="Escolha o plano" />
+											</SelectTrigger>
+											<SelectContent>
+												{planos.map((plano) => (
+													<SelectItem key={plano.id} value={plano.id.toString()}>
+														{plano.descricao}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+									)}
+								/>
+							</div>
 						</div>
-						<Separator className="my-5" />
+
 						<DialogFooter>
-							<Button type="submit" className="bg-[#006FEE] text-white">
-								Adicionar Aluno
-							</Button>
+							<Button type="submit">Adicionar Aluno</Button>
 						</DialogFooter>
 					</form>
 				</DialogContent>
