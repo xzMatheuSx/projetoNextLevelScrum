@@ -43,11 +43,20 @@ import { ScheduleModule } from '@nestjs/schedule';
   [
     TypeOrmModule.forRoot({
       type: 'postgres', 
-      host: 'localhost',
+      host: process.env.PGHOST,
       port: 5432,
-      username: 'postgres',
-      password: 'root',
-      database: 'next-level',
+      username: process.env.PGUSER,
+      password: process.env.PGPASSWORD,
+      database: process.env.PGDATABASE,
+      synchronize: true,
+      autoLoadEntities: true,
+      ssl: true,
+      extra: {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      },
+
       entities: [
         Usuario, Plano, Aluno, PlanoAluno,
         PagamentoAluno, ProdutoTipo, Produto,
@@ -55,7 +64,7 @@ import { ScheduleModule } from '@nestjs/schedule';
         EquipamentosManutencao, MovimentoEstoque,
         Venda, VendaProduto,ComprovantePagamento
       ],
-      synchronize: true,
+     
     }),
     AlunosModule, UsuariosModule, ProdutoModule, EquipamentosModule, EquipamentoTipoModule, 
     EquipamentosManutencaoModule, AlunoPresencaModule,
